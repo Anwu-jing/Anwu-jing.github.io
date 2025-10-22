@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="安悟-静导师塔罗疗愈｜仅供娱乐，助力自我探索，非宿命预言">
+    <meta name="robots" content="index, follow">
+    <title>安悟-静导师 | 塔罗疗愈（仅供娱乐）</title>
+    <!-- 外部资源引入 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 字体引入 -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Tailwind 配置：灵性风格定制 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tarot: {
+                            purple: '#6B46C1', // 主紫（灵性）
+                            indigo: '#4338CA', // 深紫（神秘）
+                            gold: '#D97706',   // 金色（神圣）
+                            cream: '#FEF3C7',  // 米白（温暖）
+                            dark: '#1A163E'    // 深空黑（背景）
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    animation: {
+                        'star-pulse': 'starPulse 3s ease-in-out infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'shuffle': 'shuffle 1.5s ease-in-out',
+                        'flip-card': 'flipCard 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                        'fade-in': 'fadeIn 1s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        starPulse: {
+                            '0%, 100%': { opacity: 0.4, transform: 'scale(1)' },
+                            '50%': { opacity: 1, transform: 'scale(1.2)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        shuffle: {
+                            '0%': { transform: 'translateX(0) rotate(0deg)' },
+                            '20%': { transform: 'translateX(-15px) rotate(-5deg)' },
+                            '40%': { transform: 'translateX(15px) rotate(5deg)' },
+                            '60%': { transform: 'translateX(-8px) rotate(-2deg)' },
+                            '80%': { transform: 'translateX(8px) rotate(2deg)' },
+                            '100%': { transform: 'translateX(0) rotate(0deg)' }
+                        },
+                        flipCard: {
+                            '0%': { transform: 'rotateY(0deg)' },
+                            '100%': { transform: 'rotateY(180deg)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: 0 },
+                            '100%': { opacity: 1 }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: 0 },
+                            '100%': { transform: 'translateY(0)', opacity: 1 }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .star-bg { background: radial-gradient(circle at center, #1A163E 0%, #0F0B24 100%); }
+            .tarot-card-inner { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+            .tarot-card-flipped .tarot-card-inner { transform: rotateY(180deg); }
+            .tarot-card-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+            .tarot-card-front { transform: rotateY(180deg); }
+            .fan-layout { position: relative; display: flex; justify-content: center; align-items: center; height: 400px; margin: 2rem 0; }
+            .perspective { perspective: 1000px; }
+            .card-glow { box-shadow: 0 0 15px rgba(217, 119, 6, 0.4); }
+            .text-shadow { text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+            .bg-blur { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+            .disclaimer-text { font-size: 0.75rem; color: rgba(254, 243, 199, 0.5); }
+            .tarot-slot { margin: 0 4px; } /* 牌间距：通过margin实现缝隙 */
+            .card-3d { transform-style: preserve-3d; }
+            .backface-hidden { backface-visibility: hidden; }
+            .hexagram-card { position: absolute; width: 22%; transition: all 0.3s ease; }
+            .decision-card { position: absolute; width: 18%; transition: all 0.3s ease; }
+        }
+    </style>
+</head>
+<body class="star-bg text-tarot-cream min-h-screen font-sans overflow-x-hidden">
+    <!-- 动态星星背景（无交互，纯装饰） -->
+    <div id="stars" class="fixed inset-0 z-0 pointer-events-none"></div>
+
+    <!-- 合规提示条（顶部固定，强调娱乐性质） -->
+    <div class="bg-tarot-dark/90 bg-blur text-center py-2 text-xs text-tarot-cream/70 border-b border-tarot-purple/30">
+        <i class="fa fa-info-circle mr-1"></i> 提示：塔罗疗愈仅供娱乐，旨在助力自我探索，非宿命预言，理性看待，勿过度依赖
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="bg-tarot-dark/70 bg-blur border-b border-tarot-purple/30 sticky top-6 z-50 mt-6">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-star text-tarot-gold text-2xl animate-star-pulse"></i>
+                <h1 class="text-xl font-serif font-bold text-tarot-cream">安悟-静导师</h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <button id="history-btn" class="text-tarot-cream/80 hover:text-tarot-gold transition-colors duration-300">
+                    <i class="fa fa-history mr-1"></i> 历史记录
+                </button>
+                <button id="about-btn" class="text-tarot-cream/80 hover:text-tarot-gold transition-colors duration-300">
+                    <i class="fa fa-info-circle mr-1"></i> 关于塔罗
+                </button>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-tarot-cream/80 hover:text-tarot-gold transition-colors duration-300">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-tarot-dark/90 bg-blur border-t border-tarot-purple/30">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+                <button id="mobile-history-btn" class="text-tarot-cream/80 hover:text-tarot-gold transition-colors duration-300 py-2 text-left">
+                    <i class="fa fa-history mr-2"></i> 历史记录
+                </button>
+                <button id="mobile-about-btn" class="text-tarot-cream/80 hover:text-tarot-gold transition-colors duration-300 py-2 text-left">
+                    <i class="fa fa-info-circle mr-2"></i> 关于塔罗
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-8 relative z-10">
+        <!-- 1. 欢迎引导页 -->
+        <section id="welcome-page" class="min-h-[70vh] flex flex-col justify-center items-center text-center animate-fade-in">
+            <div class="mb-10 animate-float">
+                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-tarot-purple/20 flex items-center justify-center border-2 border-tarot-gold/50 mx-auto">
+                    <i class="fa fa-moon-o text-tarot-gold text-4xl md:text-5xl"></i>
+                </div>
+            </div>
+            <h2 class="text-[clamp(2rem,5vw,3.5rem)] font-serif font-bold mb-6 text-shadow">
+                安悟-静导师 · 塔罗疗愈
+            </h2>
+            <p class="text-[clamp(1rem,2vw,1.25rem)] max-w-2xl mx-auto mb-10 text-tarot-cream/90 leading-relaxed">
+                塔罗是照见内心的镜子，而非预测未来的工具。在这里，我们通过塔罗的象征智慧，帮你梳理思绪、探索自我，在迷茫中找到内在力量——所有答案，早已在你心中。
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                <button id="start-journey-btn" class="px-8 py-3 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
+                    开启探索之旅 <i class="fa fa-arrow-right ml-2"></i>
+                </button>
+                <button id="learn-tarot-btn" class="px-8 py-3 bg-transparent border-2 border-tarot-cream/50 text-tarot-cream font-bold rounded-full hover:bg-tarot-cream/10 transition-all duration-300">
+                    了解塔罗意义
+                </button>
+            </div>
+            <p class="disclaimer-text max-w-md mx-auto">
+                注：本服务仅供娱乐，不构成人生指导，请勿用于封建迷信活动
+            </p>
+        </section>
+
+        <!-- 2. 议题设定页 -->
+        <section id="question-page" class="min-h-[70vh] hidden animate-slide-up">
+            <div class="max-w-2xl mx-auto">
+                <div class="mb-8 text-center">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-serif font-bold mb-4 text-shadow">
+                        设定你的探索议题
+                    </h2>
+                    <p class="text-tarot-cream/80 mb-6">
+                        请清晰、具体地描述你想梳理的方向（如关系、事业、自我成长等），明确的意图能帮你更聚焦内心答案。
+                    </p>
+                    <!-- 议题示例 -->
+                    <div class="bg-tarot-dark/50 p-4 rounded-lg mb-6 text-tarot-cream/80 text-sm border border-tarot-purple/30">
+                        <p class="mb-2"><i class="fa fa-lightbulb-o text-tarot-gold mr-2"></i> 议题示例：</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>我该如何调整心态，应对工作中的压力？</li>
+                            <li>当前与朋友的矛盾，我可以从哪些角度梳理？</li>
+                            <li>如何更好地平衡学习与休息的节奏？</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 议题输入框 -->
+                <textarea id="question-input" 
+                          class="w-full bg-tarot-dark/50 border border-tarot-purple/30 rounded-lg p-4 text-tarot-cream min-h-[150px] placeholder-tarot-cream/40 focus:outline-none focus:border-tarot-gold focus:ring-2 focus:ring-tarot-gold/20 transition-all duration-300"
+                          placeholder="请输入你想探索的议题（例：我该如何改善与家人的沟通？）..."
+                          required></textarea>
+                
+                <!-- 页面导航按钮 -->
+                <div class="mt-8 flex justify-between items-center">
+                    <button id="back-to-welcome-btn" class="px-6 py-2 bg-transparent border border-tarot-cream/50 text-tarot-cream rounded-full hover:bg-tarot-cream/10 transition-all duration-300">
+                        <i class="fa fa-arrow-left mr-2"></i> 返回
+                    </button>
+                    <button id="goto-spread-btn" class="px-8 py-3 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow" disabled>
+                        选择牌阵 <i class="fa fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+                <p class="disclaimer-text text-center mt-4">
+                    议题仅用于生成解读，我们不会存储或泄露你的私人议题内容
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. 牌阵选择页 -->
+        <section id="spread-page" class="min-h-[70vh] hidden animate-slide-up">
+            <div class="text-center mb-12">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-serif font-bold mb-4 text-shadow">
+                    选择适合你的牌阵
+                </h2>
+                <p class="text-tarot-cream/80 max-w-2xl mx-auto">
+                    不同牌阵对应不同的探索维度，选择与你当前需求匹配的牌阵，帮你更精准地梳理思绪。
+                </p>
+            </div>
+            
+            <!-- 牌阵卡片容器（响应式网格） -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <!-- 1. 单张牌牌阵 -->
+                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="one-card">
+                    <div class="text-center mb-4">
+                        <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
+                            <i class="fa fa-diamond text-tarot-gold text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-serif font-bold mb-2">单张牌牌阵</h3>
+                        <p class="text-sm text-tarot-cream/60">One-Card Spread</p>
+                    </div>
+                    <div class="h-24 flex justify-center items-center mb-4">
+                        <div class="w-16 h-24 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                            <span class="text-tarot-gold font-bold">1</span>
+                        </div>
+                    </div>
+                    <p class="text-tarot-cream/80 text-sm mb-4">
+                        适合：快速聚焦议题核心，梳理当下最关键的思绪状态，尤其适合简单、紧急的方向梳理。
+                    </p>
+                    <div class="mt-4 text-xs text-tarot-cream/50 spread-desc hidden">
+                        <p><i class="fa fa-info-circle text-tarot-gold mr-1"></i> 位置含义：聚焦议题核心能量/当下思绪状态</p>
+                    </div>
+                </div>
+                
+                <!-- 2. 圣三角牌阵 -->
+                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="celtic-cross">
+                    <div class="text-center mb-4">
+                        <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
+                            <i class="fa fa-star text-tarot-gold text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-serif font-bold mb-2">圣三角牌阵</h3>
+                        <p class="text-sm text-tarot-cream/60">Celtic Cross Spread</p>
+                    </div>
+                    <div class="h-24 flex justify-center items-center mb-4">
+                        <div class="relative w-32 h-24">
+                            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-12 h-18 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold">1</span>
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-12 h-18 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold">2</span>
+                            </div>
+                            <div class="absolute bottom-0 right-0 w-12 h-18 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold">3</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-tarot-cream/80 text-sm mb-4">
+                        适合：梳理议题的时间脉络（过去影响→现在状态→未来方向），帮你看清发展逻辑，避免片面思考。
+                    </p>
+                    <div class="mt-4 text-xs text-tarot-cream/50 spread-desc hidden">
+                        <p><i class="fa fa-info-circle text-tarot-gold mr-1"></i> 位置含义：1=过去影响，2=现在状态，3=未来方向</p>
+                    </div>
+                </div>
+                
+                <!-- 3. 一对一关系牌阵 -->
+                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="relationship">
+                    <div class="text-center mb-4">
+                        <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
+                            <i class="fa fa-heart text-tarot-gold text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-serif font-bold mb-2">一对一关系牌阵</h3>
+                        <p class="text-sm text-tarot-cream/60">Relationship Spread</p>
+                    </div>
+                    <div class="h-24 flex justify-center items-center mb-4">
+                        <div class="flex space-x-2">
+                            <div class="w-8 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">1</span>
+                            </div>
+                            <div class="w-8 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">2</span>
+                            </div>
+                            <div class="w-8 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">3</span>
+                            </div>
+                            <div class="w-8 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">4</span>
+                            </div>
+                            <div class="w-8 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">5</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-tarot-cream/80 text-sm mb-4">
+                        适合：梳理亲密关系、朋友或同事关系中的互动模式，帮你看清双方视角与关系调整方向。
+                    </p>
+                    <div class="mt-4 text-xs text-tarot-cream/50 spread-desc hidden">
+                        <p><i class="fa fa-info-circle text-tarot-gold mr-1"></i> 位置含义：1=我看对方，2=对方看我，3=当前状态，4=发展方向，5=调整建议</p>
+                    </div>
+                </div>
+                
+                <!-- 4. 二择一选择牌阵 -->
+                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="decision">
+                    <div class="text-center mb-4">
+                        <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
+                            <i class="fa fa-balance-scale text-tarot-gold text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-serif font-bold mb-2">二择一选择牌阵</h3>
+                        <p class="text-sm text-tarot-cream/60">Decision Spread</p>
+                    </div>
+                    <div class="h-24 flex justify-center items-center mb-4">
+                        <div class="relative w-36 h-20">
+                            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-10 h-14 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">1</span>
+                            </div>
+                            <div class="absolute bottom-1/3 right-1/4 w-10 h-14 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">2</span>
+                            </div>
+                            <div class="absolute top-0 right-0 w-10 h-14 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">3</span>
+                            </div>
+                            <div class="absolute bottom-1/3 left-1/4 w-10 h-14 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">4</span>
+                            </div>
+                            <div class="absolute top-0 left-0 w-10 h-14 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">5</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-tarot-cream/80 text-sm mb-4">
+                        适合：面临两难选择时（如两份offer、两种计划），帮你梳理每种选择的内在倾向与可能方向，辅助决策。
+                    </p>
+                    <div class="mt-4 text-xs text-tarot-cream/50 spread-desc hidden">
+                        <p><i class="fa fa-info-circle text-tarot-gold mr-1"></i> 位置含义：1=当前状态，2=选择一现状，3=选择一方向，4=选择二现状，5=选择二方向</p>
+                    </div>
+                </div>
+                
+                <!-- 5. 六芒星牌阵 -->
+                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="hexagram">
+                    <div class="text-center mb-4">
+                        <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
+                            <i class="fa fa-star-o text-tarot-gold text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-serif font-bold mb-2">六芒星牌阵</h3>
+                        <p class="text-sm text-tarot-cream/60">Hexagram Spread</p>
+                    </div>
+                    <div class="h-24 flex justify-center items-center mb-4">
+                        <div class="relative w-32 h-32">
+                            <!-- 上三角（位置1、2、3） -->
+                            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-10 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">1</span>
+                            </div>
+                            <div class="absolute top-1/3 right-1/4 w-10 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">2</span>
+                            </div>
+                            <div class="absolute top-1/3 left-1/4 w-10 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">3</span>
+                            </div>
+                            <!-- 下三角（位置4、5、6） -->
+                            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-10 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">4</span>
+                            </div>
+                            <div class="absolute bottom-1/3 left-1/4 w-10 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">5</span>
+                            </div>
+                            <div class="absolute bottom-1/3 right-1/4 w-10 h-16 bg-tarot-purple/30 rounded-lg flex items-center justify-center border border-tarot-purple/50">
+                                <span class="text-tarot-gold font-bold text-xs">6</span>
+                            </div>
+                            <!-- 中心（位置7） -->
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-16 bg-tarot-gold/30 rounded-lg flex items-center justify-center border border-tarot-gold/50">
+                                <span class="text-tarot-dark font-bold text-xs">7</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-tarot-cream/80 text-sm mb-4">
+                        适合：深度梳理复杂议题（如人生方向、重大决策），从过去、现在、未来等7个维度全面剖析，帮你整合思路。
+                    </p>
+                    <div class="mt-4 text-xs text-tarot-cream/50 spread-desc hidden">
+                        <p><i class="fa fa-info-circle text-tarot-gold mr-1"></i> 位置含义：1=过去，2=现在，3=未来，4=事发原因，5=环境影响，6=应对策略，7=态度做法</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 牌阵选择导航 -->
+            <div class="mt-10 text-center">
+                <button id="back-to-question-btn" class="px-6 py-2 bg-transparent border border-tarot-cream/50 text-tarot-cream rounded-full hover:bg-tarot-cream/10 transition-all duration-300 mr-4">
+                    <i class="fa fa-arrow-left mr-2"></i> 返回
+                </button>
+                <button id="confirm-spread-btn" class="px-8 py-3 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow" disabled>
+                    进入能量连接 <i class="fa fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. 能量连接页（冥想引导，非迷信） -->
+        <section id="energy-page" class="min-h-[70vh] hidden animate-slide-up">
+            <div class="max-w-2xl mx-auto text-center">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-serif font-bold mb-6 text-shadow">
+                    梳理你的内在思绪
+                </h2>
+                
+                <div class="bg-tarot-dark/50 rounded-xl p-8 mb-8 border border-tarot-purple/30">
+                    <div class="mb-6">
+                        <div class="w-full h-48 md:h-64 bg-tarot-indigo/20 rounded-lg mb-6 flex items-center justify-center overflow-hidden">
+                            <i class="fa fa-spa text-tarot-cream/80 text-6xl animate-float"></i>
+                        </div>
+                        <p class="text-tarot-cream/80 mb-4 leading-relaxed">
+                            请轻轻闭上眼睛，将双手放在心口，做三次缓慢而深沉的呼吸：吸气4秒，屏息2秒，呼气6秒。吸气时感受平静，呼气时释放杂念。
+                        </p>
+                        <p class="text-tarot-cream/80 mb-6 leading-relaxed">
+                            现在，在心中默念你的议题，告诉自己：“我愿意坦诚面对内心，梳理思绪，找到属于我的答案。” 当你感觉专注时，睁开眼睛，点击下方按钮开始洗牌。
+                        </p>
+                        <!-- 呼吸提示器 -->
+                        <div id="breath-timer" class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-tarot-gold/20 flex items-center justify-center mx-auto mb-6 border border-tarot-gold/50 animate-pulse-slow">
+                            <span class="text-tarot-gold font-bold text-lg">呼吸</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center">
+                        <button id="start-shuffling-btn" class="px-8 py-3 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
+                            开始洗牌 <i class="fa fa-refresh ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <button id="back-to-spread-btn" class="px-6 py-2 bg-transparent border border-tarot-cream/50 text-tarot-cream rounded-full hover:bg-tarot-cream/10 transition-all duration-300">
+                        <i class="fa fa-arrow-left mr-2"></i> 返回
+                    </button>
+                </div>
+                <p class="disclaimer-text text-center mt-4">
+                    此环节为心理放松引导，非能量连接或超自然仪式
+                </p>
+            </div>
+        </section>
+
+        <!-- 5. 洗牌抽牌翻牌页 -->
+        <section id="reading-page" class="min-h-[70vh] hidden animate-slide-up">
+            <div class="text-center mb-8">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-serif font-bold mb-4 text-shadow">
+                    塔罗思绪梳理
+                </h2>
+                <p id="display-question" class="text-tarot-cream/80 max-w-2xl mx-auto italic">
+                    "你的议题将在这里显示..."
+                </p>
+            </div>
+            
+            <!-- 洗牌动画区 -->
+            <div id="shuffling-area" class="mb-10 text-center">
+                <div id="shuffling-animation" class="w-64 h-64 mx-auto relative perspective">
+                    <div class="absolute top-0 left-0 w-full h-full bg-tarot-purple/20 rounded-lg flex items-center justify-center border border-tarot-purple/30 transform rotate-3 animate-shuffle">
+                        <i class="fa fa-refresh text-4xl text-tarot-gold animate-spin"></i>
+                    </div>
+                </div>
+                <p class="mt-4 text-tarot-cream/70">正在梳理思绪，洗牌中...</p>
+            </div>
+            
+            <!-- 扇形牌组抽牌区 -->
+            <div id="card-selection-area" class="hidden">
+                <p class="text-center text-tarot-cream/80 mb-6">
+                    请凭直觉从下方牌组中，抽取 <span id="cards-need" class="text-tarot-gold font-bold">3</span> 张牌，依次放入牌阵
+                </p>
+                
+                <div id="fan-card-deck" class="fan-layout perspective">
+                    <!-- 扇形牌组通过JS动态生成 -->
+                </div>
+            </div>
+            
+            <!-- 牌阵展示区 -->
+            <div id="spread-display-area" class="hidden mb-10">
+                <h3 id="current-spread-name" class="text-xl font-serif font-bold mb-6 text-center">
+                    圣三角牌阵
+                </h3>
+                
+                <div id="spread-container" class="perspective">
+                    <!-- 牌阵通过JS动态生成 -->
+                </div>
+            </div>
+            
+            <!-- 解读报告区 -->
+            <div id="interpretation-area" class="hidden max-w-4xl mx-auto mt-12">
+                <div class="bg-tarot-dark/50 rounded-xl p-8 border border-tarot-purple/30 mb-8">
+                    <h3 class="text-xl font-serif font-bold mb-6 text-center text-tarot-gold">
+                        安悟-静导师 · 塔罗思绪解读报告
+                    </h3>
+                    
+                    <div id="ai-interpretation" class="prose prose-invert max-w-none text-tarot-cream/90 leading-relaxed">
+                        <!-- AI解读通过JS动态生成 -->
+                    </div>
+                    
+                    <!-- AI解读提示与人工入口 -->
+                    <div id="personal-analysis-container" class="mt-8 pt-6 border-t border-tarot-purple/30">
+                        <p class="text-tarot-cream/70 text-sm mb-4 italic">
+                            以上为AI初步解读（仅供娱乐），若需安悟-静导师结合你的具体情境，提供1对1深度思绪梳理与调整建议，可点击下方按钮。
+                        </p>
+                        <button id="get-personal-analysis-btn" class="w-full px-8 py-3 bg-gradient-to-r from-tarot-gold to-amber-500 text-tarot-dark font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
+                            获取人工深度梳理（¥198） <i class="fa fa-heart ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="disclaimer-text text-center">
+                    解读内容基于塔罗象征意义，非科学结论，仅供自我探索参考
+                </p>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="mt-10 text-center">
+                <button id="back-to-energy-btn" class="px-6 py-2 bg-transparent border border-tarot-cream/50 text-tarot-cream rounded-full hover:bg-tarot-cream/10 transition-all duration-300 mr-4">
+                    <i class="fa fa-arrow-left mr-2"></i> 返回
+                </button>
+                <button id="save-reading-btn" class="hidden px-6 py-2 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
+                    保存记录 <i class="fa fa-save ml-2"></i>
+                </button>
+                <button id="new-reading-btn" class="hidden px-6 py-2 bg-gradient-to-r from-tarot-gold to-amber-500 text-tarot-dark font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow ml-4">
+                    新的探索 <i class="fa fa-refresh ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 6. 历史记录页 -->
+        <section id="history-page" class="min-h-[70vh] hidden animate-slide-up">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-serif font-bold mb-4 text-shadow">
+                        你的探索记录
+                    </h2>
+                    <p class="text-tarot-cream/80">
+                        存储最近5次的思绪梳理记录，帮你回顾成长轨迹（记录仅保存在本地浏览器，清除缓存会丢失）
+                    </p>
+                </div>
+                
+                <div id="history-list" class="space-y-6">
+                    <!-- 历史记录通过JS动态生成 -->
+                    <div class="bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 text-center">
+                        <p class="text-tarot-cream/70">你尚未进行过塔罗思绪梳理</p>
+                        <button id="first-reading-btn" class="mt-4 px-6 py-2 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
+                            开启第一次探索 <i class="fa fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. 关于塔罗页（强调娱乐性质） -->
+        <section id="about-tarot-page" class="min-h-[70vh] hidden animate-slide-up">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-serif font-bold mb-4 text-shadow">
+                        关于塔罗探索
+                    </h2>
+                </div>
+                
+                <div class="bg-tarot-dark/50 rounded-xl p-8 border border-tarot-purple/30 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-serif font-bold mb-4 text-tarot-gold">塔罗是什么？</h3>
+                            <p class="text-tarot-cream/80 mb-4 leading-relaxed">
+                                塔罗是一种古老的象征系统，由78张包含丰富符号的卡片组成。它不是算命工具，而是一面映照内心的镜子，帮助我们探索潜意识中的想法、感受和可能性。
+                            </p>
+                            <p class="text-tarot-cream/80 mb-4 leading-relaxed">
+                                每张塔罗牌都包含多层次的象征意义，通过解读这些符号，我们可以梳理混乱的思绪，获得新的视角，更好地理解自己的处境和内心需求。
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-serif font-bold mb-4 text-tarot-gold">我们如何使用塔罗？</h3>
+                            <p class="text-tarot-cream/80 mb-4 leading-relaxed">
+                                在安悟-静导师的塔罗疗愈中，我们将塔罗视为自我探索的工具。通过设定清晰的议题，选择合适的牌阵，抽取卡牌并解读，帮助你：
+                            </p>
+                            <ul class="text-tarot-cream/80 space-y-2 mb-4">
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-tarot-gold mt-1 mr-2"></i>
+                                    <span>梳理复杂的情绪和想法</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-tarot-gold mt-1 mr-2"></i>
+                                    <span>从新的角度看待问题</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-tarot-gold mt-1 mr-2"></i>
+                                    <span>连接内在智慧，找到答案</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h3 class="text-xl font-serif font-bold mb-4 text-tarot-gold">重要声明</h3>
+                        <div class="bg-tarot-dark/70 p-6 rounded-lg border border-tarot-purple/30">
+                            <p class="text-tarot-cream/80 mb-3 leading-relaxed">
+                                <i class="fa fa-exclamation-circle text-tarot-gold mr-2"></i>
+                                本服务仅供娱乐和自我探索，不构成任何形式的人生指导、心理咨询或预测未来。
+                            </p>
+                            <p class="text-tarot-cream/80 mb-3 leading-relaxed">
+                                <i class="fa fa-exclamation-circle text-tarot-gold mr-2"></i>
+                                塔罗解读的结果反映的是当前的思绪状态和可能的发展方向，而非注定的命运。你的人生始终由自己掌控。
+                            </p>
+                            <p class="text-tarot-cream/80 leading-relaxed">
+                                <i class="fa fa-exclamation-circle text-tarot-gold mr-2"></i>
+                                请勿将塔罗解读用于重大决策参考，也不应替代专业的心理咨询、医疗建议或法律意见。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button id="back-from-about-btn" class="px-6 py-2 bg-transparent border border-tarot-cream/50 text-tarot-cream rounded-full hover:bg-tarot-cream/10 transition-all duration-300">
+                        <i class="fa fa-arrow-left mr-2"></i> 返回首页
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-tarot-dark/70 bg-blur border-t border-tarot-purple/30 py-6 mt-12 relative z-10">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8 mb-6">
+                <a href="#" class="text-tarot-cream/70 hover:text-tarot-gold transition-colors duration-300">
+                    <i class="fa fa-weixin text-2xl"></i>
+                </a>
+                <a href="#" class="text-tarot-cream/70 hover:text-tarot-gold transition-colors duration-300">
+                    <i class="fa fa-weibo text-2xl"></i>
+                </a>
+                <a href="#" class="text-tarot-cream/70 hover:text-tarot-gold transition-colors duration-300">
+                    <i class="fa fa-envelope text-2xl"></i>
+                </a>
+            </div>
+            <p class="text-tarot-cream/50 text-sm mb-2">
+                安悟-静导师 © 塔罗疗愈 | 仅供娱乐，助力自我探索
+            </p>
+            <p class="disclaimer-text">
+                免责声明：本服务不构成任何形式的人生指导或预测，理性看待，勿过度依赖
+            </p>
+        </div>
+    </footer>
+
+    <!-- 付费模态框 -->
+    <div id="payment-modal" class="fixed inset-0 bg-tarot-dark/90 flex items-center justify-center z-50 hidden">
+        <div class="bg-tarot-dark/80 border border-tarot-purple/50 rounded-xl max-w-md w-full mx-4 overflow-hidden animate-slide-up">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-serif font-bold text-tarot-gold">获取人工深度梳理</h3>
+                    <button id="close-modal-btn" class="text-tarot-cream/60 hover:text-tarot-cream">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- 服务介绍 -->
+                <div class="mb-6">
+                    <h4 class="font-serif font-bold text-tarot-gold mb-2">人工分析 vs AI分析</h4>
+                    <div class="space-y-3 text-tarot-cream/80">
+                        <div class="flex items-start">
+                            <i class="fa fa-check-circle text-tarot-gold mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-bold">个性化解读：</span>
+                                <span>导师结合你的具体情境，提供针对性分析</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa fa-check-circle text-tarot-gold mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-bold">深度洞察：</span>
+                                <span>挖掘牌阵背后的深层含义，提供更具价值的视角</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa fa-check-circle text-tarot-gold mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-bold">行动建议：</span>
+                                <span>提供可落地的思绪调整方案和行动指导</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa fa-check-circle text-tarot-gold mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-bold">后续支持：</span>
+                                <span>通过邮箱提供后续疑问解答（24小时内）</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 重要提示 -->
+                <div class="bg-tarot-dark/70 p-4 rounded-lg border border-tarot-gold/30 mb-6">
+                    <p class="text-tarot-cream/80 flex items-start">
+                        <i class="fa fa-exclamation-triangle text-tarot-gold mt-1 mr-2"></i>
+                        <span>深度人工分析为付费服务，一旦支付成功，将不予退款</span>
+                    </p>
+                </div>
+                
+                <!-- 价格信息 -->
+                <div class="text-center mb-6">
+                    <div class="inline-block bg-tarot-dark/50 border border-tarot-gold/30 rounded-lg px-6 py-4">
+                        <span class="text-3xl font-bold text-tarot-gold">¥198</span>
+                        <span class="text-tarot-cream/60 ml-1">/次解读</span>
+                    </div>
+                </div>
+                
+                <!-- 支付二维码区域 -->
+<div class="grid grid-cols-2 gap-4 mb-6">
+    <!-- 微信支付 -->
+    <div class="bg-white/10 rounded-xl p-3 flex flex-col items-center">
+        <p class="text-sm text-tarot-cream/80 mb-2">微信支付</p>
+        <div class="bg-white p-2 rounded-lg mb-2">
+            <img src="微信二维码.jpg" alt="微信二维码" class="w-32 h-32 object-contain">
+        </div>
+    </div>
+    
+    <!-- 支付宝支付 -->
+    <div class="bg-white/10 rounded-xl p-3 flex flex-col items-center">
+        <p class="text-sm text-tarot-cream/80 mb-2">支付宝支付</p>
+        <div class="bg-white p-2 rounded-lg mb-2">
+            <img src="支付宝二维码.jpg" alt="支付宝二维码" class="w-32 h-32 object-contain">
+        </div>
+    </div>
+</div>
+
+                <!-- 操作按钮 -->
+                <div class="flex flex-col gap-3">
+                    <button id="confirm-payment-btn" class="px-6 py-3 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
+                        已完成支付 <i class="fa fa-check ml-2"></i>
+                    </button>
+                    <button id="cancel-payment-btn" class="px-6 py-2 bg-transparent border border-tarot-cream/50 text-tarot-cream rounded-full hover:bg-tarot-cream/10 transition-all duration-300">
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 信息表单模态框 -->
+    <div id="info-form-modal" class="fixed inset-0 bg-tarot-dark/90 flex items-center justify-center z-50 hidden">
+        <div class="bg-tarot-dark/80 border border-tarot-purple/50 rounded-xl max-w-md w-full mx-4 overflow-hidden animate-slide-up">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-serif font-bold text-tarot-gold">提交你的信息</h3>
+                    <button id="close-form-btn" class="text-tarot-cream/60 hover:text-tarot-cream">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <p class="text-tarot-cream/80 mb-6">
+                    请填写以下信息，你的人工分析报告将发送至你的邮箱
+                </p>
+                
+                <!-- 表单 -->
+                <form id="user-info-form" class="space-y-4 mb-6">
+                    <div>
+                        <label for="name" class="block text-sm text-tarot-cream/80 mb-1">姓名 <span class="text-tarot-gold">*</span></label>
+                        <input type="text" id="name" name="name" required
+                            class="w-full bg-tarot-dark/70 border border-tarot-purple/30 rounded-lg p-3 text-tarot-cream focus:outline-none focus:border-tarot-gold focus:ring-2 focus:ring-tarot-gold/20">
+                    </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-sm text-tarot-cream/80 mb-1">电话 <span class="text-tarot-gold">*</span></label>
+                        <input type="tel" id="phone" name="phone" required
+                            class="w-full bg-tarot-dark/70 border border-tarot-purple/30 rounded-lg p-3 text-tarot-cream focus:outline-none focus:border-tarot-gold focus:ring-2 focus:ring-tarot-gold/20">
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm text-tarot-cream/80 mb-1">邮箱 <span class="text-tarot-gold">*</span></label>
+                        <input type="email" id="email" name="email" required
+                            class="w-full bg-tarot-dark/70 border border-tarot-purple/30 rounded-lg p-3 text-tarot-cream focus:outline-none focus:border-tarot-gold focus:ring-2 focus:ring-tarot-gold/20">
+                    </div>
+                    
+                    <div>
+                        <label for="notes" class="block text-sm text-tarot-cream/80 mb-1">补充说明（可选）</label>
+                        <textarea id="notes" name="notes" rows="3"
+                            class="w-full bg-tarot-dark/70 border border-tarot-purple/30 rounded-lg p-3 text-tarot-cream focus:outline-none focus:border-tarot-gold focus:ring-2 focus:ring-tarot-gold/20"
+                            placeholder="请输入希望咨询师特别关注的点..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
+                        提交信息 <i class="fa fa-paper-plane ml-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交成功模态框 -->
+    <div id="success-modal" class="fixed inset-0 bg-tarot-dark/90 flex items-center justify-center z-50 hidden">
+        <div class="bg-tarot-dark/80 border border-tarot-purple/50 rounded-xl max-w-md w-full mx-4 overflow-hidden animate-slide-up text-center">
+            <div class="p-8">
+                <div class="inline-block p-4 bg-tarot-gold/20 rounded-full mb-6">
+                    <i class="fa fa-check text-4xl text-tarot-gold"></i>
+                </div>
+                
+                <h3 class="text-xl font-serif font-bold mb-4 text-tarot-gold">提交成功！</h3>
+                
+                <p class="text-tarot-cream/80 mb-6 leading-relaxed">
+                    感谢您的信任！您的人工分析报告将在24小时内发送至您的邮箱，请注意查收。
+                </p>
+                
+                <button id="close-success-btn" class="px-8 py-3 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 全局状态管理
+        const state = {
+            currentPage: 'welcome-page',
+            question: '',
+            selectedSpread: '',
+            spreadConfig: {
+                'one-card': { name: '单张牌牌阵', cardCount: 1, positions: ['核心能量'] },
+                'celtic-cross': { name: '圣三角牌阵', cardCount: 3, positions: ['过去影响', '现在状态', '未来方向'] },
+                'relationship': { name: '一对一关系牌阵', cardCount: 5, positions: ['我看对方', '对方看我', '当前状态', '发展方向', '调整建议'] },
+                'decision': { name: '二择一选择牌阵', cardCount: 5, positions: ['当前状态', '选择一现状', '选择一方向', '选择二现状', '选择二方向'] },
+                'hexagram': { name: '六芒星牌阵', cardCount: 7, positions: ['过去', '现在', '未来', '事发原因', '环境影响', '应对策略', '态度做法'] }
+            },
+            selectedCards: [],
+            shuffledDeck: [],
+            readings: JSON.parse(localStorage.getItem('tarotReadings')) || [],
+            currentReading: null, // 存储当前解读信息，用于保存到历史记录
+            currentInterpretation: '' // 存储当前解读报告
+        };
+
+        // 塔罗牌数据
+        const tarotDeck = [
+            { name: "愚人", arcana: "major", meaning: "象征无拘无束的新开始、纯粹的勇气与对未知的热情。这暗示你正站在人生的新起点，带着与生俱来的天真与果敢，不必被过往的经验束缚，顺应内心的指引去探索，当下的冒险将为你带来意想不到的成长与机遇。", reversedMeaning: "代表鲁莽冲动、缺乏规划与对风险的忽视。提示你可能正被盲目乐观冲昏头脑，或是因逃避现实而草率行动，忽视了潜在的危机，此时需要放慢脚步，理性审视前路，避免因一时的轻率付出不必要的代价。" },
+{ name: "魔术师", arcana: "major", meaning: "代表创造力、行动和资源的整合。暗示你拥有实现目标所需的一切工具和能力，现在是采取行动的好时机。", reversedMeaning: "创造力受阻，资源浪费，行动犹豫不决。提示你可能正处于自我怀疑中，无法充分发挥自己的能力。" },
+            { name: "女祭司", arcana: "major", meaning: "象征直觉、神秘和内在智慧。提示你需要倾听内心的声音，相信自己的直觉，探索潜意识中的信息。", reversedMeaning: "直觉失灵，信息闭塞，过度理性。提示你可能忽略了内心的感受，过于依赖外在的证据和逻辑。" },
+            { name: "女皇", arcana: "major", meaning: "代表丰饶、滋养和创造力。暗示一段充满活力、丰收或创造力旺盛的时期，也可能提醒你关注自我关爱。", reversedMeaning: "创造力枯竭，缺乏滋养，自我忽视。提示你可能过于关注他人而忽略了自己的需求，需要重新平衡给予与接受。" },
+            { name: "皇帝", arcana: "major", meaning: "象征权威、结构和控制力。提示你需要建立秩序，发挥领导力，或在某种情况下采取更坚定的立场。", reversedMeaning: "权威滥用，控制欲过强，僵化固执。提示你可能过于固执己见，无法灵活应对变化，需要学会适度放手。" },
+            { name: "教皇", arcana: "major", meaning: "代表传统、指导和精神信仰。暗示你可能需要寻求智慧指导，或遵循既定的规则和传统。", reversedMeaning: "传统束缚，盲目服从，教条主义。提示你可能被旧有的观念所限制，需要打破常规，寻找适合自己的道路。" },
+            { name: "恋人", arcana: "major", meaning: "象征选择、关系和价值观。提示重要的选择需要基于你的核心价值观，或关系中将有重要发展。", reversedMeaning: "选择困难，关系失衡，价值观冲突。提示你可能在关系中失去了自我，需要重新审视自己的核心需求。" },
+            { name: "战车", arcana: "major", meaning: "代表决心、控制和前进的动力。暗示你需要整合矛盾的力量，坚定地向目标前进。", reversedMeaning: "动力不足，内心矛盾，方向迷茫。提示你可能正处于内在冲突中，需要先整合自己的思绪再继续前进。" },
+            { name: "力量", arcana: "major", meaning: "象征内在力量、勇气和温柔的力量。提示真正的力量来自内心的平静和自信，而非外在的强制。", reversedMeaning: "软弱无力，缺乏勇气，情绪失控。提示你可能正被恐惧所控制，需要学会接纳自己的脆弱，从中找到真正的力量。" },
+            { name: "隐士", arcana: "major", meaning: "代表内省、智慧和独处。暗示你需要花时间独处反思，寻找内在的智慧和答案。", reversedMeaning: "孤立封闭，过度内省，逃避现实。提示你可能过于沉浸在自己的世界里，需要适当走出孤独，与外界连接。" },
+            { name: "命运之轮", arcana: "major", meaning: "象征变化、命运和循环。提示生活中的变化是自然的，接受并顺应这些变化将带来成长。", reversedMeaning: "抗拒变化，命运逆转，错失机遇。提示你可能正试图控制无法控制的事情，需要学会顺应生命的流动。" },
+            { name: "正义", arcana: "major", meaning: "代表公平、平衡和因果。暗示你需要做出公正的决定，或生活将带来公平的结果。", reversedMeaning: "不公不义，失衡偏颇，逃避责任。提示你可能在某个决定中带有偏见，需要重新审视自己的判断标准。" },
+            { name: "倒吊人", arcana: "major", meaning: "象征牺牲、视角转变和等待。提示有时需要换个角度看问题，或暂时放下某些东西以获得新的理解。", reversedMeaning: "牺牲无意义，固执己见，无法放下。提示你可能在坚持一些不再适合你的东西，需要学会换个角度看问题。" },
+            { name: "死神", arcana: "major", meaning: "代表结束、转变和新生。暗示某个阶段的结束将带来新的开始，这是自然的转变过程。", reversedMeaning: "抗拒结束，恐惧变化，停滞不前。提示你可能正抓住过去不放，无法接受必要的转变，阻碍了自己的成长。" },
+            { name: "节制", arcana: "major", meaning: "象征平衡、调和和适度。提示你需要在生活的不同方面找到平衡，或在变化中保持内在的和谐。", reversedMeaning: "失衡失调，过度放纵，缺乏自律。提示你可能在生活的某个方面过于极端，需要寻找中间道路。" },
+            { name: "恶魔", arcana: "major", meaning: "代表诱惑、束缚和物质欲望。暗示你可能被物质欲望或负面想法束缚，需要找回自由。", reversedMeaning: "摆脱束缚，战胜诱惑，重获自由。提示你正从某种不健康的模式中解脱出来，重新获得内心的自由。" },
+            { name: "塔", arcana: "major", meaning: "象征突然变化、崩溃和觉醒。提示旧有的结构可能突然崩溃，但这将带来必要的觉醒和新的开始。", reversedMeaning: "崩溃延迟，抗拒觉醒，旧结构苟延残喘。提示你可能在拖延必要的改变，虽然暂时安全，但长期来看不利于成长。" },
+            { name: "星星", arcana: "major", meaning: "代表希望、灵感和精神指引。暗示即使在困难时期，也要保持希望，追随内心的灵感。", reversedMeaning: "希望破灭，灵感枯竭，迷失方向。提示你可能正处于低谷期，需要重新连接自己的内心，寻找新的希望。" },
+            { name: "月亮", arcana: "major", meaning: "象征不确定性、直觉和潜意识。提示你可能正经历迷茫时期，需要关注直觉和梦境中的信息。", reversedMeaning: "恐惧消除，真相显现，潜意识整合。提示你正逐渐看清事物的真相，克服内心的恐惧，走向清醒。" },
+            { name: "太阳", arcana: "major", meaning: "代表喜悦、成功和生命力。暗示一段光明、愉快的时期，充满活力和积极的能量。", reversedMeaning: "喜悦短暂，成功受阻，活力不足。提示你可能正经历一个低谷，但这只是暂时的，阳光终将再次照耀。" },
+            { name: "审判", arcana: "major", meaning: "象征觉醒、评估和重生。提示你需要反思过去，做出必要的改变，迎接新的开始。", reversedMeaning: "拒绝觉醒，逃避评估，错失重生。提示你可能在回避面对自己的过去和错误，需要勇敢地面对并做出改变。" },
+            { name: "世界", arcana: "major", meaning: "代表完成、圆满和整合。暗示一个重要的周期已经完成，你获得了新的理解和智慧。", reversedMeaning: "未完成，不圆满，整合失败。提示你可能在某个阶段的结束处感到不满足，需要重新审视自己的目标和价值观。" },
+            { name: "权杖一", arcana: "minor", meaning: "代表新的开始、创造力和行动力。暗示一个充满活力的新计划或想法即将展开。", reversedMeaning: "新计划受阻，创造力受限，行动迟缓。提示你可能在启动新阶段时遇到障碍，需要重新评估时机和方法。" },
+            { name: "权杖二", arcana: "minor", meaning: "象征规划、远见和扩展。提示你需要明确目标，制定计划，为未来做准备。", reversedMeaning: "规划混乱，缺乏远见，固步自封。提示你可能对未来感到迷茫，需要花时间明确自己的方向和目标。" },
+            { name: "权杖三", arcana: "minor", meaning: "代表探索、远见和进展。暗示你正在朝着目标前进，保持耐心将看到成果。", reversedMeaning: "探索受阻，进展缓慢，缺乏耐心。提示你可能在追求目标的过程中遇到挫折，需要保持耐心并调整策略。" },
+            { name: "权杖四", arcana: "minor", meaning: "象征稳定、和谐和庆祝。暗示一个阶段的成功完成，是时候享受成果并巩固基础了。", reversedMeaning: "不稳定，冲突，庆祝过早。提示你可能还没有真正稳固基础，需要继续努力才能确保长期稳定。" },
+            { name: "权杖五", arcana: "minor", meaning: "代表冲突、竞争和挑战。暗示你正面临来自他人的竞争或内部的矛盾，需要找到平衡和解决方案。", reversedMeaning: "冲突加剧，竞争不公，内部矛盾。提示你可能被竞争和冲突所消耗，需要寻找和平解决的方式。" },
+            { name: "权杖六", arcana: "minor", meaning: "象征胜利、进展和认可。暗示你在某个领域取得了成功，得到了应有的认可和尊重。", reversedMeaning: "胜利短暂，进展虚假，认可不实。提示你可能过于关注表面的成功，而忽略了真正重要的东西。" },
+            { name: "权杖七", arcana: "minor", meaning: "代表坚持、防御和勇气。暗示你需要坚守自己的立场，勇敢面对挑战，不轻易放弃。", reversedMeaning: "坚持过度，防御过强，勇气不足。提示你可能在不必要的事情上浪费精力，或者缺乏坚持下去的勇气。" },
+            { name: "权杖八", arcana: "minor", meaning: "象征迅速行动、消息和旅行。暗示一个快速发展的 situation，可能有突然的消息或变化。", reversedMeaning: "行动迟缓，消息延迟，旅行受阻。提示你可能在某个计划上拖延，或者遇到了意想不到的阻碍。" },
+            { name: "权杖九", arcana: "minor", meaning: "代表警惕、防御和经验。暗示你从过去的经验中学会了保持警惕，做好了应对挑战的准备。", reversedMeaning: "过度警惕，恐惧不安，经验不足。提示你可能被过去的经历所困扰，过度担心未来的挑战。" },
+            { name: "权杖十", arcana: "minor", meaning: "象征负担、责任和压力。暗示你承担了过多的责任和压力，需要学会放下或寻求帮助。", reversedMeaning: "拒绝承担，压力过大，不堪重负。提示你可能要么承担了过多，要么完全拒绝承担责任，需要找到平衡。" },
+            { name: "权杖侍从", arcana: "minor", meaning: "代表热情、新想法和行动力。暗示一个充满热情的新开始，或者一个充满活力的年轻人将进入你的生活。", reversedMeaning: "热情不足，想法不切实际，行动鲁莽。提示你可能对新计划缺乏热情，或者过于冲动行事。" },
+            { name: "权杖骑士", arcana: "minor", meaning: "象征冒险、行动和热情。暗示你需要采取大胆的行动，追求自己的目标，充满热情地前进。", reversedMeaning: "冒险过度，行动冲动，热情减退。提示你可能过于鲁莽，或者对目标失去了热情。" },
+            { name: "权杖国王", arcana: "minor", meaning: "代表领导力、创造力和自信。暗示你具备强大的领导能力和创造力，能够成功地实现自己的目标。", reversedMeaning: "领导力差，创造力缺乏，自信过度。提示你可能在领导方面遇到困难，或者过于自负。" },
+            { name: "权杖女王", arcana: "minor", meaning: "象征热情、创造力和行动力。暗示你充满创造力和热情，能够以温和而坚定的方式实现自己的目标。", reversedMeaning: "热情减退，创造力缺乏，行动犹豫。提示你可能失去了热情和创造力，需要重新连接自己的内在动力。" },
+            { name: "圣杯一", arcana: "minor", meaning: "代表爱、情感和新的开始。暗示一段新的情感关系或情感上的新开始即将出现。", reversedMeaning: "爱缺失，情感封闭，新开始受阻。提示你可能在情感上封闭自己，难以接受新的感情或体验。" },
+            { name: "圣杯二", arcana: "minor", meaning: "象征和谐、伙伴关系和平衡。暗示一段平等、和谐的关系，可能是爱情、友谊或合作关系。", reversedMeaning: "关系失衡，不和谐，合作失败。提示你可能在关系中遇到困难，需要重新寻找平衡和和谐。" },
+            { name: "圣杯三", arcana: "minor", meaning: "代表庆祝、友谊和合作。暗示与朋友或伙伴的愉快合作或庆祝，分享喜悦和成功。", reversedMeaning: "庆祝过度，友谊破裂，合作不顺利。提示你可能在人际关系中遇到问题，需要重新评估这些关系。" },
+            { name: "圣杯四", arcana: "minor", meaning: "象征不满、冷漠和选择。暗示你对现状不满，可能在等待更好的机会或选择。", reversedMeaning: "不满加剧，冷漠过度，选择困难。提示你可能过于挑剔或冷漠，错过了眼前的机会。" },
+            { name: "圣杯五", arcana: "minor", meaning: "代表失落、悲伤和遗憾。暗示你正经历某种失落或悲伤，需要时间来疗愈和接受。", reversedMeaning: "失落过度，无法释怀，拒绝疗愈。提示你可能深陷于悲伤中无法自拔，需要允许自己疗愈和前进。" },
+            { name: "圣杯六", arcana: "minor", meaning: "象征给予、接受和和谐。暗示一段互相给予和接受的关系，充满温暖和关怀。", reversedMeaning: "给予失衡，接受困难，关系紧张。提示你可能在关系中要么给予过多，要么难以接受他人的好意。" },
+            { name: "圣杯七", arcana: "minor", meaning: "代表梦想、欲望和幻觉。暗示你有很多梦想和欲望，但需要区分现实和幻想。", reversedMeaning: "梦想破灭，欲望过度，幻觉破灭。提示你可能过于沉迷于不切实际的幻想，需要面对现实。" },
+            { name: "圣杯八", arcana: "minor", meaning: "象征离开、探索和成长。暗示你需要离开当前的环境或状态，寻求新的成长和体验。", reversedMeaning: "不愿离开，害怕探索，停滞不前。提示你可能害怕改变和未知，停留在舒适区，阻碍了成长。" },
+            { name: "圣杯九", arcana: "minor", meaning: "代表满足、幸福和自信。暗示你对自己的生活感到满意和幸福，充满自信和自足。", reversedMeaning: "满足虚假，幸福短暂，自信不足。提示你可能表面上看起来满足，但内心并不真正快乐，或者缺乏自信。" },
+            { name: "圣杯十", arcana: "minor", meaning: "象征幸福、和谐和家庭。暗示一个充满爱和和谐的家庭或团体环境，共享幸福和喜悦。", reversedMeaning: "家庭冲突，和谐破裂，幸福短暂。提示你可能在家庭或团体中遇到矛盾，需要努力重建和谐。" },
+            { name: "圣杯侍从", arcana: "minor", meaning: "代表情感、直觉和新机会。暗示一个情感丰富的年轻人将进入你的生活，或者一个新的情感机会出现。", reversedMeaning: "情感封闭，直觉迟钝，机会错失。提示你可能忽视了自己的情感和直觉，错过了重要的机会。" },
+            { name: "圣杯骑士", arcana: "minor", meaning: "象征浪漫、情感和行动力。暗示一段浪漫的关系即将开始，或者你需要在情感上采取行动。", reversedMeaning: "浪漫虚假，情感冲动，行动犹豫。提示你可能在情感上过于冲动或犹豫，需要找到平衡。" },
+            { name: "圣杯国王", arcana: "minor", meaning: "代表情感稳定、智慧和关怀。暗示你在情感上成熟稳定，能够给予他人智慧和关怀。", reversedMeaning: "情感不稳定，缺乏智慧，关怀不足。提示你可能在情感上不够成熟，需要更多的自我反思和成长。" },
+            { name: "圣杯女王", arcana: "minor", meaning: "象征爱、关怀和直觉。暗示你充满爱心和关怀，能够敏锐地感知他人的情感需求。", reversedMeaning: "爱缺失，关怀不足，直觉迟钝。提示你可能在情感上封闭自己，难以表达爱和关怀。" },
+            { name: "宝剑一", arcana: "minor", meaning: "代表真相、思想和新开始。暗示一个清晰的想法或真相即将出现，带来新的开始。", reversedMeaning: "真相扭曲，思想混乱，新开始受阻。提示你可能被虚假信息误导，或者思维混乱，难以开始新的计划。" },
+            { name: "宝剑二", arcana: "minor", meaning: "象征平衡、选择和保护。暗示你需要在两个选择之间找到平衡，或者保护自己免受外界的影响。", reversedMeaning: "平衡失调，选择困难，过度保护。提示你可能难以做出选择，或者过于封闭自己，拒绝外界的影响。" },
+            { name: "宝剑三", arcana: "minor", meaning: "代表痛苦、悲伤和心碎。暗示你正在经历情感上的痛苦和心碎，需要时间来疗愈。", reversedMeaning: "痛苦加剧，无法释怀，拒绝疗愈。提示你可能深陷于痛苦中无法自拔，需要允许自己疗愈和前进。" },
+            { name: "宝剑四", arcana: "minor", meaning: "象征休息、恢复和反思。暗示你需要暂停下来，休息和反思，恢复精力和清晰度。", reversedMeaning: "休息过度，逃避现实，无法恢复。提示你可能通过过度休息来逃避现实，需要面对问题并采取行动。" },
+            { name: "宝剑五", arcana: "minor", meaning: "代表冲突、胜利和损失。暗示你可能在一场冲突中获胜，但也付出了代价，或者经历了某种损失。", reversedMeaning: "冲突加剧，失败，损失惨重。提示你可能在冲突中失败，或者经历了重大损失，需要重新评估自己的策略。" },
+            { name: "宝剑六", arcana: "minor", meaning: "象征过渡、移动和疗愈。暗示你正在经历一个过渡时期，逐渐从困难中恢复和疗愈。", reversedMeaning: "过渡困难，停滞不前，疗愈受阻。提示你可能在过渡时期遇到困难，难以前进和疗愈。" },
+            { name: "宝剑七", arcana: "minor", meaning: "代表策略、机智和欺骗。暗示你需要运用策略和机智来应对挑战，或者警惕被他人欺骗。", reversedMeaning: "策略不当，机智不足，欺骗他人。提示你可能使用了不道德的手段，或者被自己的小聪明所误导。" },
+            { name: "宝剑八", arcana: "minor", meaning: "象征限制、恐惧和束缚。暗示你可能感到被限制或束缚，这些限制更多来自内心的恐惧而非外部。", reversedMeaning: "限制加剧，恐惧加深，拒绝自由。提示你可能过于害怕自由和责任，宁愿选择被限制的状态。" },
+            { name: "宝剑九", arcana: "minor", meaning: "代表焦虑、恐惧和噩梦。暗示你正在经历焦虑和恐惧，可能被噩梦或负面想法困扰。", reversedMeaning: "焦虑加剧，恐惧失控，噩梦成真。提示你可能被恐惧和焦虑所控制，需要寻求帮助和支持。" },
+            { name: "宝剑十", arcana: "minor", meaning: "象征结束、痛苦和新开始。暗示一个困难时期的结束，虽然痛苦，但也带来了新的开始的机会。", reversedMeaning: "结束延迟，痛苦加剧，无法开始。提示你可能迟迟不愿结束一个痛苦的 situation，阻碍了新的开始。" },
+            { name: "宝剑侍从", arcana: "minor", meaning: "代表好奇心、学习和沟通。暗示你对新知识充满好奇，或者需要更好地沟通自己的想法。", reversedMeaning: "好奇心缺乏，学习困难，沟通不畅。提示你可能对新事物缺乏兴趣，或者在沟通中遇到困难。" },
+            { name: "宝剑骑士", arcana: "minor", meaning: "象征行动、真理和勇气。暗示你需要勇敢地追求真理，采取行动来实现自己的目标。", reversedMeaning: "行动鲁莽，真理扭曲，勇气不足。提示你可能过于冲动，或者缺乏追求真理的勇气。" },
+            { name: "宝剑国王", arcana: "minor", meaning: "代表智慧、权威和公正。暗示你具备清晰的思维和判断力，能够做出公正的决定。", reversedMeaning: "智慧不足，权威滥用，不公不义。提示你可能在决策中缺乏智慧和公正，需要重新审视自己的判断。" },
+            { name: "宝剑女王", arcana: "minor", meaning: "象征直觉、智慧和清晰。暗示你具备敏锐的直觉和清晰的思维，能够洞察事物的本质。", reversedMeaning: "直觉迟钝，智慧不足，思维混乱。提示你可能在思考中遇到困难，需要暂停下来，重新连接自己的直觉。" },
+            { name: "星币一", arcana: "minor", meaning: "代表财富、机会和新开始。暗示一个新的财务机会或物质上的新开始即将出现。", reversedMeaning: "财富流失，机会错失，新开始受阻。提示你可能错过了重要的财务机会，或者在物质层面遇到困难。" },
+            { name: "星币二", arcana: "minor", meaning: "象征平衡、适应和变化。暗示你需要在财务或物质方面找到平衡，适应变化的环境。", reversedMeaning: "平衡失调，适应困难，变化混乱。提示你可能在适应变化时遇到困难，需要寻找新的平衡点。" },
+            { name: "星币三", arcana: "minor", meaning: "代表合作、技能和创造力。暗示通过合作和运用自己的技能，你将获得物质上的成功。", reversedMeaning: "合作失败，技能不足，创造力缺乏。提示你可能在合作中遇到困难，或者没有充分发挥自己的技能。" },
+            { name: "星币四", arcana: "minor", meaning: "象征稳定、安全和保守。暗示你重视财务安全和稳定，可能过于保守地管理自己的资源。", reversedMeaning: "稳定不足，安全缺失，过度保守。提示你可能要么过于吝啬，要么在财务上过于冒险，需要找到平衡。" },
+            { name: "星币五", arcana: "minor", meaning: "代表困难、匮乏和挑战。暗示你正在经历财务或物质上的困难，需要寻找新的解决方案。", reversedMeaning: "困难加剧，匮乏严重，绝望。提示你可能在财务困难中感到绝望，需要保持希望并寻找新的机会。" },
+            { name: "星币六", arcana: "minor", meaning: "象征给予、接受和平衡。暗示在财务或物质方面，给予和接受的平衡将带来和谐和丰盛。", reversedMeaning: "给予失衡，接受困难，不公平。提示你可能在财务上要么给予过多，要么过于贪婪，需要找到平衡和公平。" },
+            { name: "星币七", arcana: "minor", meaning: "代表耐心、投资和收获。暗示你需要耐心等待自己的投资和努力带来收获。", reversedMeaning: "耐心不足，投资不当，收获无望。提示你可能在投资或努力中缺乏耐心，或者方法不当，需要重新评估。" },
+            { name: "星币八", arcana: "minor", meaning: "象征努力、技能和专注。暗示通过专注和努力工作，你将提高自己的技能并获得物质上的回报。", reversedMeaning: "努力不足，技能欠缺，专注不够。提示你可能在工作中缺乏专注和努力，需要更加投入。" },
+            { name: "星币九", arcana: "minor", meaning: "代表独立、富足和自信。暗示你在财务上独立和富足，对自己的能力充满自信。", reversedMeaning: "独立不足，富足虚假，自信缺乏。提示你可能在财务上依赖他人，或者表面富足但内心缺乏安全感。" },
+            { name: "星币十", arcana: "minor", meaning: "象征财富、家庭和传承。暗示一个富裕的家庭环境，或者财富的积累将为后代带来好处。", reversedMeaning: "财富流失，家庭冲突，传承中断。提示你可能在家庭或财务方面遇到困难，需要努力重建和谐和稳定。" },
+            { name: "星币侍从", arcana: "minor", meaning: "代表学习、实践和新机会。暗示你需要学习关于财务或物质方面的知识，或者一个新的实际机会即将出现。", reversedMeaning: "学习不足，实践不够，机会错失。提示你可能忽视了学习和实践的重要性，错过了实际的机会。" },
+            { name: "星币骑士", arcana: "minor", meaning: "象征务实、可靠和努力。暗示你需要以务实和可靠的方式努力工作，逐步实现自己的目标。", reversedMeaning: "务实过度，不可靠，努力不足。提示你可能要么过于务实而缺乏远见，要么不够努力和可靠。" },
+            { name: "星币国王", arcana: "minor", meaning: "代表财富、成功和务实。暗示你通过务实和明智的决策，获得了财务上的成功和稳定。", reversedMeaning: "财富管理不善，成功虚假，务实过度。提示你可能在财务管理上遇到困难，或者过于务实而失去了生活的乐趣。" },
+            { name: "星币女王", arcana: "minor", meaning: "象征丰饶、滋养和实际。暗示你能够创造一个丰饶和舒适的环境，关心他人的实际需求。", reversedMeaning: "丰饶不足，滋养缺乏，实际过度。提示你可能忽视了自己和他人的实际需求，或者过于关注物质而忽视了精神层面。" }
+        ];
+
+        // DOM 元素
+        const pages = {
+            welcome: document.getElementById('welcome-page'),
+            question: document.getElementById('question-page'),
+            spread: document.getElementById('spread-page'),
+            energy: document.getElementById('energy-page'),
+            reading: document.getElementById('reading-page'),
+            history: document.getElementById('history-page'),
+            aboutTarot: document.getElementById('about-tarot-page')
+        };
+
+        const buttons = {
+            startJourney: document.getElementById('start-journey-btn'),
+            learnTarot: document.getElementById('learn-tarot-btn'),
+            backToWelcome: document.getElementById('back-to-welcome-btn'),
+            gotoSpread: document.getElementById('goto-spread-btn'),
+            backToQuestion: document.getElementById('back-to-question-btn'),
+            confirmSpread: document.getElementById('confirm-spread-btn'),
+            backToSpread: document.getElementById('back-to-spread-btn'),
+            startShuffling: document.getElementById('start-shuffling-btn'),
+            backToEnergy: document.getElementById('back-to-energy-btn'),
+            saveReading: document.getElementById('save-reading-btn'),
+            newReading: document.getElementById('new-reading-btn'),
+            historyBtn: document.getElementById('history-btn'),
+            aboutBtn: document.getElementById('about-btn'),
+            mobileMenuBtn: document.getElementById('mobile-menu-btn'),
+            mobileHistoryBtn: document.getElementById('mobile-history-btn'),
+            mobileAboutBtn: document.getElementById('mobile-about-btn'),
+            backFromAbout: document.getElementById('back-from-about-btn'),
+            firstReading: document.getElementById('first-reading-btn'),
+            getPersonalAnalysis: document.getElementById('get-personal-analysis-btn'),
+            closeModal: document.getElementById('close-modal-btn'),
+            confirmPayment: document.getElementById('confirm-payment-btn'),
+            cancelPayment: document.getElementById('cancel-payment-btn'),
+            closeForm: document.getElementById('close-form-btn'),
+            closeSuccess: document.getElementById('close-success-btn')
+        };
+
+        const inputs = {
+            question: document.getElementById('question-input'),
+            name: document.getElementById('name'),
+            phone: document.getElementById('phone'),
+            email: document.getElementById('email'),
+            notes: document.getElementById('notes')
+        };
+
+        const modals = {
+            payment: document.getElementById('payment-modal'),
+            infoForm: document.getElementById('info-form-modal'),
+            success: document.getElementById('success-modal')
+        };
+
+        const readingElements = {
+            displayQuestion: document.getElementById('display-question'),
+            shufflingArea: document.getElementById('shuffling-area'),
+            cardSelectionArea: document.getElementById('card-selection-area'),
+            fanCardDeck: document.getElementById('fan-card-deck'),
+            cardsNeed: document.getElementById('cards-need'),
+            spreadDisplayArea: document.getElementById('spread-display-area'),
+            spreadContainer: document.getElementById('spread-container'),
+            currentSpreadName: document.getElementById('current-spread-name'),
+            interpretationArea: document.getElementById('interpretation-area'),
+            aiInterpretation: document.getElementById('ai-interpretation'),
+            historyList: document.getElementById('history-list'),
+            personalAnalysisContainer: document.getElementById('personal-analysis-container')
+        };
+
+        // 初始化星星背景
+        function initStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                const size = Math.random() * 3 + 1;
+                const opacity = Math.random() * 0.8 + 0.2;
+                const animationDelay = Math.random() * 5;
+                
+                star.style.position = 'absolute';
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.backgroundColor = 'white';
+                star.style.borderRadius = '50%';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = opacity;
+                star.style.animation = 'starPulse 3s ease-in-out infinite';
+                star.style.animationDelay = `${animationDelay}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // 页面切换函数
+        function showPage(pageId) {
+            // 隐藏所有页面
+            Object.values(pages).forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // 显示目标页面
+            document.getElementById(pageId).classList.remove('hidden');
+            state.currentPage = pageId;
+        }
+
+        // 初始化牌阵选择
+        function initSpreadSelection() {
+            const spreadCards = document.querySelectorAll('.spread-card');
+            
+            spreadCards.forEach(card => {
+                // 显示/隐藏牌阵描述
+                card.addEventListener('mouseenter', () => {
+                    card.querySelector('.spread-desc').classList.remove('hidden');
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    if (!card.classList.contains('selected')) {
+                        card.querySelector('.spread-desc').classList.add('hidden');
+                    }
+                });
+                
+                // 选择牌阵
+                card.addEventListener('click', () => {
+                    // 移除其他牌阵的选中状态
+                    spreadCards.forEach(c => {
+                        c.classList.remove('selected', 'border-tarot-gold', 'bg-tarot-dark/70');
+                        c.classList.add('border-tarot-purple/30');
+                        c.querySelector('.spread-desc').classList.add('hidden');
+                    });
+                    
+                    // 设置当前牌阵选中状态
+                    card.classList.add('selected', 'border-tarot-gold', 'bg-tarot-dark/70');
+                    card.classList.remove('border-tarot-purple/30');
+                    card.querySelector('.spread-desc').classList.remove('hidden');
+                    
+                    // 更新状态
+                    state.selectedSpread = card.dataset.spread;
+                    buttons.confirmSpread.disabled = false;
+                });
+            });
+        }
+
+        // 洗牌函数
+        function shuffleDeck() {
+            // 创建牌组副本
+            const deck = [...tarotDeck];
+            const shuffled = [];
+            
+            // 随机抽取牌
+            while (deck.length > 0) {
+                const randomIndex = Math.floor(Math.random() * deck.length);
+                const card = deck.splice(randomIndex, 1)[0];
+                // 随机决定牌是否倒置
+                card.reversed = Math.random() > 0.7;
+                shuffled.push(card);
+            }
+            
+            state.shuffledDeck = shuffled;
+            return shuffled;
+        }
+
+        // 创建扇形牌组（增加牌数量并添加"安悟塔罗"文字）
+        function createFanDeck() {
+            readingElements.fanCardDeck.innerHTML = '';
+            const cardsToShow = 50; // 增加牌数量到50张
+            const angleStep = 2.5; // 减小每张牌的角度差，使扇形更宽
+            const startAngle = -(angleStep * (cardsToShow - 1)) / 2; // 起始角度
+            
+            // 从洗牌后的牌组中取前50张创建扇形
+            for (let i = 0; i < cardsToShow; i++) {
+                const card = state.shuffledDeck[i % state.shuffledDeck.length];
+                const angle = startAngle + (i * angleStep);
+                
+                const cardElement = document.createElement('div');
+                cardElement.className = 'tarot-card tarot-slot perspective cursor-pointer transition-all duration-300 hover:-translate-y-4';
+                cardElement.style.transform = `rotate(${angle}deg)`;
+                cardElement.dataset.index = i;
+                
+                // 牌面HTML结构，背面添加"安悟塔罗"文字
+cardElement.innerHTML = `
+<div class="tarot-card-inner relative w-24 h-36 md:w-28 md:h-40">
+  <div class="tarot-card-face absolute w-full h-full bg-gradient-to-b from-tarot-purple to-tarot-indigo rounded-lg border-2 border-tarot-gold/50 flex flex-col items-center justify-center tarot-card-back">
+    <i class="fa fa-star text-2xl text-tarot-gold animate-star-pulse mb-2"></i>
+    <span class="text-tarot-cream font-serif font-bold">安悟塔罗</span>
+  </div>
+  <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-2 tarot-card-front">
+    <div class="h-full flex flex-col">
+      <div class="text-center font-serif font-bold text-tarot-gold text-sm mb-1">${card.name}</div>
+      <div class="flex-grow flex items-center justify-center">
+        <i class="fa fa-${card.arcana === 'major' ? 'diamond' : 'heart'} text-tarot-cream/70 text-xl"></i>
+      </div>
+      <div class="text-center text-xs text-tarot-cream/50">${card.arcana === 'major' ? '大阿卡那' : '小阿卡那'}</div>
+      ${card.reversed ? '<div class="absolute top-1 right-1 text-xs text-tarot-gold/70">逆</div>' : ''}
+    </div>
+  </div>
+</div>
+`;
+                
+                // 点击选择牌
+                cardElement.addEventListener('click', () => {
+                    if (state.selectedCards.length < state.spreadConfig[state.selectedSpread].cardCount) {
+                        // 添加到已选牌组
+                        state.selectedCards.push({...card, originalIndex: i});
+                        cardElement.classList.add('opacity-0');
+                        
+                        // 更新剩余需要的牌数
+                        const remaining = state.spreadConfig[state.selectedSpread].cardCount - state.selectedCards.length;
+                        readingElements.cardsNeed.textContent = remaining;
+                        
+                        // 如果选够了牌，显示牌阵
+                        if (remaining === 0) {
+                            setTimeout(() => {
+                                showSpread();
+                            }, 500);
+                        }
+                    }
+                });
+                
+                readingElements.fanCardDeck.appendChild(cardElement);
+            }
+        }
+
+        // 显示牌阵（调整六芒星和二择一牌阵布局）
+        function showSpread() {
+            readingElements.cardSelectionArea.classList.add('hidden');
+            readingElements.spreadDisplayArea.classList.remove('hidden');
+            
+            // 设置牌阵名称
+            readingElements.currentSpreadName.textContent = state.spreadConfig[state.selectedSpread].name;
+            
+            // 根据不同牌阵创建布局
+            const spreadType = state.selectedSpread;
+            const positions = state.spreadConfig[spreadType].positions;
+            
+            // 清空牌阵容器
+            readingElements.spreadContainer.innerHTML = '';
+            
+            // 设置牌阵容器样式
+            switch(spreadType) {
+                case 'one-card':
+                    readingElements.spreadContainer.className = 'flex justify-center';
+                    break;
+                case 'celtic-cross':
+                    readingElements.spreadContainer.className = 'flex flex-col items-center';
+                    break;
+                case 'relationship':
+                    readingElements.spreadContainer.className = 'flex justify-center gap-2 md:gap-4 flex-wrap';
+                    break;
+                case 'decision':
+                    readingElements.spreadContainer.className = 'relative w-full max-w-2xl mx-auto h-64';
+                    break;
+                case 'hexagram':
+                    readingElements.spreadContainer.className = 'relative w-full max-w-2xl mx-auto h-80';
+                    break;
+            }
+            
+            // 创建牌阵位置
+            state.selectedCards.forEach((card, index) => {
+                const cardPosition = document.createElement('div');
+                
+                // 根据牌阵类型设置位置样式
+                switch(spreadType) {
+                    case 'one-card':
+                        cardPosition.className = 'tarot-slot perspective';
+                        break;
+                        
+                    case 'celtic-cross':
+                        cardPosition.className = index === 0 ? 'mb-8' : 'mx-4';
+                        if (index > 0) {
+                            cardPosition.classList.add('inline-block');
+                        }
+                        break;
+                        
+                    case 'relationship':
+                        cardPosition.className = 'tarot-slot perspective mx-2';
+                        break;
+                        
+                    case 'decision':
+                        // 二择一牌阵 - 调整位置避免重叠
+                        cardPosition.className = 'decision-card tarot-slot perspective';
+                        if (index === 0) {
+                            cardPosition.style.bottom = '-10%';
+                            cardPosition.style.left = '50%';
+                            cardPosition.style.transform = 'translateX(-50%)';
+                        } else if (index === 1) {
+                            cardPosition.style.top = '15%';
+                            cardPosition.style.right = '30%';
+                        } else if (index === 2) {
+                            cardPosition.style.top = '0';
+                            cardPosition.style.right = '10%';
+                        } else if (index === 3) {
+                            cardPosition.style.top = '15%';
+                            cardPosition.style.left = '30%';
+                        } else if (index === 4) {
+                            cardPosition.style.top = '0';
+                            cardPosition.style.left = '10%';
+                        }
+                        break;
+                        
+                    case 'hexagram':
+                        // 六芒星牌阵 - 钟表式布局
+    cardPosition.className = 'hexagram-card tarot-slot perspective';
+    if (index === 0) { // 位置1：十二点钟位置
+        cardPosition.style.top = '0%';
+        cardPosition.style.left = '50%';
+        cardPosition.style.transform = 'translateX(-50%)';
+    } else if (index === 1) { // 位置2：四点钟位置
+        cardPosition.style.top = '70%';
+        cardPosition.style.right = '15%';
+    } else if (index === 2) { // 位置3：八点钟位置
+        cardPosition.style.top = '70%';
+        cardPosition.style.left = '15%';
+    } else if (index === 3) { // 位置4：六点钟位置
+        cardPosition.style.top = '100%';
+        cardPosition.style.left = '50%';
+        cardPosition.style.transform = 'translateX(-50%)';
+    } else if (index === 4) { // 位置5：十点钟位置
+        cardPosition.style.top = '10%';
+        cardPosition.style.left = '15%';
+    } else if (index === 5) { // 位置6：两点钟位置
+        cardPosition.style.top = '10%';
+        cardPosition.style.right = '15%';
+    } else if (index === 6) { // 位置7：中心位置
+        cardPosition.style.top = '80%';
+        cardPosition.style.left = '50%';
+        cardPosition.style.transform = 'translate(-50%, -50%)';
+        cardPosition.style.zIndex = '10'; // 确保中心牌在最上层
+    }
+    break;
+                }
+                
+                // 牌面HTML
+                cardPosition.innerHTML = `
+                    <div class="mb-2 text-center text-sm text-tarot-cream/80">${positions[index]}</div>
+                    <div class="tarot-card tarot-card-flipped cursor-pointer" data-index="${index}">
+                        <div class="tarot-card-inner relative w-24 h-36 md:w-28 md:h-40">
+                            <div class="tarot-card-face absolute w-full h-full bg-gradient-to-b from-tarot-purple to-tarot-indigo rounded-lg border-2 border-tarot-gold/50 flex flex-col items-center justify-center tarot-card-back">
+                                <i class="fa fa-star text-2xl text-tarot-gold animate-star-pulse mb-2"></i>
+                                <span class="text-tarot-cream font-serif font-bold">安悟塔罗</span>
+                            </div>
+                            <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-2 tarot-card-front">
+                                <div class="h-full flex flex-col">
+                                    <div class="text-center font-serif font-bold text-tarot-gold text-sm mb-1">${card.name}</div>
+                                    <div class="flex-grow flex items-center justify-center">
+                                        <i class="fa fa-${card.arcana === 'major' ? 'diamond' : 'heart'} text-tarot-cream/70 text-xl"></i>
+                                    </div>
+                                    <div class="text-center text-xs text-tarot-cream/50">${card.arcana === 'major' ? '大阿卡那' : '小阿卡那'}</div>
+                                    ${card.reversed ? '<div class="absolute top-1 right-1 text-xs text-tarot-gold/70">逆</div>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-center text-xs text-tarot-cream/60 card-meaning hidden" data-index="${index}">
+                        ${card.reversed ? card.reversedMeaning : card.meaning}
+                    </div>
+                `;
+                
+                // 点击牌显示/隐藏含义
+                const cardElement = cardPosition.querySelector('.tarot-card');
+                const meaningElement = cardPosition.querySelector('.card-meaning');
+                
+                cardElement.addEventListener('click', () => {
+                    meaningElement.classList.toggle('hidden');
+                });
+                
+                readingElements.spreadContainer.appendChild(cardPosition);
+            });
+            
+            // 延迟生成解读报告
+            setTimeout(generateInterpretation, 1500);
+        }
+
+        // 生成解读报告
+        function generateInterpretation() {
+            // 构建解读文本
+            let interpretation = `<p class="mb-4">针对你的议题：<span class="text-tarot-gold italic">${state.question}</span></p>`;
+            
+            interpretation += `<p class="mb-6">通过${state.spreadConfig[state.selectedSpread].name}的梳理，我们可以从以下角度理解当前的思绪状态：</p>`;
+            
+            // 逐张牌解读
+            state.selectedCards.forEach((card, index) => {
+                const position = state.spreadConfig[state.selectedSpread].positions[index];
+                interpretation += `
+                    <div class="mb-6 p-4 bg-tarot-dark/70 rounded-lg border border-tarot-purple/30">
+                        <h4 class="font-serif font-bold text-tarot-gold mb-2">${position}：${card.name}${card.reversed ? '（逆位）' : ''}</h4>
+                        <p class="text-tarot-cream/80">${card.reversed ? card.reversedMeaning : card.meaning}</p>
+                    </div>
+                `;
+            });
+            
+            // 综合解读
+            interpretation += `
+                <div class="mt-8 p-5 bg-tarot-dark/70 rounded-lg border border-tarot-gold/30">
+                    <h4 class="font-serif font-bold text-tarot-gold mb-3">综合梳理</h4>
+                    <p class="text-tarot-cream/80 mb-4">
+                        从整体来看，这些牌提示你需要关注内在的${state.selectedCards[0].name.toLowerCase()}能量，
+                        这与你当前的议题密切相关。无论是面对过去的影响、现在的状态还是未来的可能性，
+                        关键在于保持${state.selectedCards[1] ? (state.selectedCards[1].arcana === 'major' ? '内在的平衡' : '行动的勇气') : '内心的觉察'}。
+                    </p>
+                    <p class="text-tarot-cream/80">
+                        请记住，塔罗只是映照内心的工具，真正的答案始终在你心中。这些解读希望能帮助你
+                        更清晰地看待自己的思绪，找到属于自己的方向。
+                    </p>
+                </div>
+            `;
+            
+            // 显示解读报告
+            readingElements.aiInterpretation.innerHTML = interpretation;
+            readingElements.interpretationArea.classList.remove('hidden');
+            
+            // 显示保存和新探索按钮
+            buttons.saveReading.classList.remove('hidden');
+            buttons.newReading.classList.remove('hidden');
+          
+            // 保存当前解读信息
+            state.currentReading = {
+                id: Date.now(),
+                question: state.question,
+                spread: state.selectedSpread,
+                spreadName: state.spreadConfig[state.selectedSpread].name,
+                cards: state.selectedCards,
+                date: new Date().toLocaleString(),
+                interpretation: interpretation,
+                hasPayment: state.selectedSpread !== 'one-card'
+            };
+        }
+
+        // 保存解读到历史记录
+        function saveReadingToHistory() {
+            if (state.currentReading) {
+                // 添加到历史记录
+                state.readings.unshift(state.currentReading);
+                
+                // 限制最多保存5条记录
+                if (state.readings.length > 5) {
+                    state.readings.pop();
+                }
+                
+                // 保存到本地存储
+                localStorage.setItem('tarotReadings', JSON.stringify(state.readings));
+                
+                // 更新历史记录页面
+                updateHistoryList();
+                
+                // 提示保存成功
+                alert('解读记录已保存');
+            }
+        }
+
+        // 更新历史记录列表
+        function updateHistoryList() {
+            if (state.readings.length === 0) {
+                readingElements.historyList.innerHTML = `
+                    <div class="bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 text-center">
+                        <p class="text-tarot-cream/70">你尚未进行过塔罗思绪梳理</p>
+                        <button id="first-reading-btn" class="mt-4 px-6 py-2 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
+                            开启第一次探索 <i class="fa fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                `;
+                
+                // 重新绑定按钮事件
+                document.getElementById('first-reading-btn').addEventListener('click', () => {
+                    showPage('question-page');
+                });
+                
+                return;
+            }
+            
+            // 生成历史记录列表
+            readingElements.historyList.innerHTML = '';
+            
+            state.readings.forEach(reading => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 hover:border-tarot-gold/30 transition-all duration-300';
+                
+                historyItem.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-serif font-bold text-lg">${reading.spreadName}</h3>
+                        <span class="text-xs text-tarot-cream/50">${reading.date}</span>
+                    </div>
+                    <p class="text-tarot-cream/80 text-sm mb-4 line-clamp-2">
+                        议题：${reading.question}
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${reading.cards.map(card => `
+                            <div class="bg-tarot-dark/70 px-2 py-1 rounded text-xs border border-tarot-purple/30">
+                                ${card.name}${card.reversed ? '（逆）' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="view-history-btn w-full py-2 border border-tarot-cream/50 rounded-full text-sm hover:bg-tarot-cream/10 transition-all duration-300" data-id="${reading.id}">
+                        查看完整解读
+                    </button>
+                `;
+                
+                readingElements.historyList.appendChild(historyItem);
+            });
+            
+            // 绑定查看历史记录事件
+            document.querySelectorAll('.view-history-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const readingId = parseInt(btn.dataset.id);
+                    const reading = state.readings.find(r => r.id === readingId);
+                    
+                    if (reading) {
+                        // 加载历史解读到当前页面
+                        state.question = reading.question;
+                        state.selectedSpread = reading.spread;
+                        state.selectedCards = reading.cards;
+                        
+                        showPage('reading-page');
+                        readingElements.displayQuestion.textContent = `"${state.question}"`;
+                        readingElements.shufflingArea.classList.add('hidden');
+                        readingElements.cardSelectionArea.classList.add('hidden');
+                        readingElements.spreadDisplayArea.classList.remove('hidden');
+                        readingElements.interpretationArea.classList.remove('hidden');
+                        
+                        readingElements.currentSpreadName.textContent = reading.spreadName;
+                        readingElements.aiInterpretation.innerHTML = reading.interpretation;
+                        
+                        // 单张牌历史记录隐藏付费接口
+                        if (reading.spread === 'one-card') {
+                            readingElements.personalAnalysisContainer.classList.add('hidden');
+                        } else {
+                            readingElements.personalAnalysisContainer.classList.remove('hidden');
+                        }
+                        
+                        buttons.saveReading.classList.add('hidden'); // 历史记录无需再次保存
+                        buttons.newReading.classList.remove('hidden');
+                        
+                        // 重建牌阵
+                        showSpread();
+                    }
+                });
+            });
+        }
+
+        // 初始化事件监听
+        function initEventListeners() {
+            // 欢迎页按钮
+            buttons.startJourney.addEventListener('click', () => {
+                showPage('question-page');
+            });
+            
+            buttons.learnTarot.addEventListener('click', () => {
+                showPage('about-tarot-page');
+            });
+            
+            // 议题页按钮
+            buttons.backToWelcome.addEventListener('click', () => {
+                showPage('welcome-page');
+            });
+            
+            // 议题输入框监听
+            inputs.question.addEventListener('input', () => {
+                state.question = inputs.question.value.trim();
+                buttons.gotoSpread.disabled = state.question.length === 0;
+            });
+            
+            buttons.gotoSpread.addEventListener('click', () => {
+                showPage('spread-page');
+            });
+            
+            // 牌阵页按钮
+            buttons.backToQuestion.addEventListener('click', () => {
+                showPage('question-page');
+            });
+            
+            buttons.confirmSpread.addEventListener('click', () => {
+                showPage('energy-page');
+            });
+            
+            // 能量连接页按钮
+            buttons.backToSpread.addEventListener('click', () => {
+                showPage('spread-page');
+            });
+            
+            buttons.startShuffling.addEventListener('click', () => {
+                showPage('reading-page');
+                readingElements.displayQuestion.textContent = `"${state.question}"`;
+                
+                // 洗牌并显示抽牌区
+                shuffleDeck();
+                
+                setTimeout(() => {
+                    readingElements.shufflingArea.classList.add('hidden');
+                    readingElements.cardSelectionArea.classList.remove('hidden');
+                    readingElements.cardsNeed.textContent = state.spreadConfig[state.selectedSpread].cardCount;
+                    createFanDeck();
+                }, 2000);
+            });
+            
+            // 解读页按钮
+            buttons.backToEnergy.addEventListener('click', () => {
+                showPage('energy-page');
+                // 重置当前解读状态
+                state.selectedCards = [];
+            });
+            
+            buttons.saveReading.addEventListener('click', saveReadingToHistory);
+            
+            buttons.newReading.addEventListener('click', () => {
+                // 重置状态
+                state.question = '';
+                state.selectedSpread = '';
+                state.selectedCards = [];
+                state.currentReading = null;
+                inputs.question.value = '';
+                
+                showPage('welcome-page');
+            });
+            
+            // 历史记录按钮
+            buttons.historyBtn.addEventListener('click', () => {
+                updateHistoryList();
+                showPage('history-page');
+            });
+            
+            buttons.mobileHistoryBtn.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+                updateHistoryList();
+                showPage('history-page');
+            });
+            
+            // 关于塔罗按钮
+            buttons.aboutBtn.addEventListener('click', () => {
+                showPage('about-tarot-page');
+            });
+            
+            buttons.mobileAboutBtn.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+                showPage('about-tarot-page');
+            });
+            
+            buttons.backFromAbout.addEventListener('click', () => {
+                showPage('welcome-page');
+            });
+            
+            // 移动端菜单
+            buttons.mobileMenuBtn.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            });
+            
+            // 付费模态框
+            buttons.getPersonalAnalysis.addEventListener('click', () => {
+                modals.payment.classList.remove('hidden');
+            });
+            
+            buttons.closeModal.addEventListener('click', () => {
+                modals.payment.classList.add('hidden');
+            });
+            
+            buttons.cancelPayment.addEventListener('click', () => {
+                modals.payment.classList.add('hidden');
+            });
+            
+            buttons.confirmPayment.addEventListener('click', () => {
+                modals.payment.classList.add('hidden');
+                modals.infoForm.classList.remove('hidden');
+            });
+            
+            // 信息表单
+            buttons.closeForm.addEventListener('click', () => {
+                modals.infoForm.classList.add('hidden');
+            });
+            
+            document.getElementById('user-info-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                modals.infoForm.classList.add('hidden');
+                modals.success.classList.remove('hidden');
+            });
+            
+            buttons.closeSuccess.addEventListener('click', () => {
+                modals.success.classList.add('hidden');
+            });
+        }
+
+        // 初始化应用
+        function initApp() {
+            initStars();
+            initSpreadSelection();
+            initEventListeners();
+            updateHistoryList();
+            
+            // 初始化禁用按钮
+            buttons.gotoSpread.disabled = true;
+            buttons.confirmSpread.disabled = true;
+        }
+
+        // 启动应用
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
