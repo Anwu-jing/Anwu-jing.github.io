@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -1072,14 +1073,17 @@
 
         // 创建扇形牌组（增加牌数量并添加"安悟塔罗"文字）
         function createFanDeck() {
-            readingElements.fanCardDeck.innerHTML = '';
-            const cardsToShow = 50; // 增加牌数量到50张
-            const angleStep = 2.5; // 减小每张牌的角度差，使扇形更宽
-            const startAngle = -(angleStep * (cardsToShow - 1)) / 2; // 起始角度
-            
-            // 从洗牌后的牌组中取前50张创建扇形
-            for (let i = 0; i < cardsToShow; i++) {
-                const card = state.shuffledDeck[i % state.shuffledDeck.length];
+  readingElements.fanCardDeck.innerHTML = '';
+  const cardsToShow = 78; // 显示全部78张塔罗牌
+  const angleStep = 1.8; // 减小每张牌的角度差，使扇形更宽
+  const startAngle = -(angleStep * (cardsToShow - 1)) / 2; // 起始角度
+
+  // 从洗牌后的牌组中取前78张创建扇形
+  for (let i = 0; i < cardsToShow; i++) {
+    const card = state.shuffledDeck[i]; // 改为直接取洗牌后的牌
+    // ... 其余代码保持不变
+  }
+}
                 const angle = startAngle + (i * angleStep);
                 
                 const cardElement = document.createElement('div');
