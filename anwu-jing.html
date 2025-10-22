@@ -1088,14 +1088,19 @@
                 cardElement.dataset.index = i;
                 
                 // 牌面HTML结构，背面添加"安悟塔罗"文字
+const imageName = card.reversed ? `${card.name}（逆）.jpg` : `${card.name}（正）.jpg`;
 cardElement.innerHTML = `
 <div class="tarot-card-inner relative w-24 h-36 md:w-28 md:h-40">
   <div class="tarot-card-face absolute w-full h-full bg-gradient-to-b from-tarot-purple to-tarot-indigo rounded-lg border-2 border-tarot-gold/50 flex flex-col items-center justify-center tarot-card-back">
     <i class="fa fa-star text-2xl text-tarot-gold animate-star-pulse mb-2"></i>
     <span class="text-tarot-cream font-serif font-bold">安悟塔罗</span>
   </div>
-  <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-2 tarot-card-front">
-    <div class="h-full flex flex-col">
+  <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-2 tarot-card-front overflow-hidden">
+    <img src="${imageName}" 
+         alt="${card.name}${card.reversed ? '（逆位）' : '（正位）'}" 
+         class="w-full h-full object-cover"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <div class="h-full flex flex-col absolute inset-0 bg-tarot-dark" style="display:none;">
       <div class="text-center font-serif font-bold text-tarot-gold text-sm mb-1">${card.name}</div>
       <div class="flex-grow flex items-center justify-center">
         <i class="fa fa-${card.arcana === 'major' ? 'diamond' : 'heart'} text-tarot-cream/70 text-xl"></i>
@@ -1241,30 +1246,35 @@ cardElement.innerHTML = `
                 }
                 
                 // 牌面HTML
-                cardPosition.innerHTML = `
-                    <div class="mb-2 text-center text-sm text-tarot-cream/80">${positions[index]}</div>
-                    <div class="tarot-card tarot-card-flipped cursor-pointer" data-index="${index}">
-                        <div class="tarot-card-inner relative w-24 h-36 md:w-28 md:h-40">
-                            <div class="tarot-card-face absolute w-full h-full bg-gradient-to-b from-tarot-purple to-tarot-indigo rounded-lg border-2 border-tarot-gold/50 flex flex-col items-center justify-center tarot-card-back">
-                                <i class="fa fa-star text-2xl text-tarot-gold animate-star-pulse mb-2"></i>
-                                <span class="text-tarot-cream font-serif font-bold">安悟塔罗</span>
-                            </div>
-                            <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-2 tarot-card-front">
-                                <div class="h-full flex flex-col">
-                                    <div class="text-center font-serif font-bold text-tarot-gold text-sm mb-1">${card.name}</div>
-                                    <div class="flex-grow flex items-center justify-center">
-                                        <i class="fa fa-${card.arcana === 'major' ? 'diamond' : 'heart'} text-tarot-cream/70 text-xl"></i>
-                                    </div>
-                                    <div class="text-center text-xs text-tarot-cream/50">${card.arcana === 'major' ? '大阿卡那' : '小阿卡那'}</div>
-                                    ${card.reversed ? '<div class="absolute top-1 right-1 text-xs text-tarot-gold/70">逆</div>' : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-2 text-center text-xs text-tarot-cream/60 card-meaning hidden" data-index="${index}">
-                        ${card.reversed ? card.reversedMeaning : card.meaning}
-                    </div>
-                `;
+const imageName = card.reversed ? `${card.name}（逆）.jpg` : `${card.name}（正）.jpg`;
+cardPosition.innerHTML = `
+<div class="mb-2 text-center text-sm text-tarot-cream/80">${positions[index]}</div>
+<div class="tarot-card tarot-card-flipped cursor-pointer" data-index="${index}">
+  <div class="tarot-card-inner relative w-24 h-36 md:w-28 md:h-40">
+    <div class="tarot-card-face absolute w-full h-full bg-gradient-to-b from-tarot-purple to-tarot-indigo rounded-lg border-2 border-tarot-gold/50 flex flex-col items-center justify-center tarot-card-back">
+      <i class="fa fa-star text-2xl text-tarot-gold animate-star-pulse mb-2"></i>
+      <span class="text-tarot-cream font-serif font-bold">安悟塔罗</span>
+    </div>
+    <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-2 tarot-card-front overflow-hidden">
+      <img src="${imageName}" 
+           alt="${card.name}${card.reversed ? '（逆位）' : '（正位）'}" 
+           class="w-full h-full object-cover"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="h-full flex flex-col absolute inset-0 bg-tarot-dark" style="display:none;">
+        <div class="text-center font-serif font-bold text-tarot-gold text-sm mb-1">${card.name}</div>
+        <div class="flex-grow flex items-center justify-center">
+          <i class="fa fa-${card.arcana === 'major' ? 'diamond' : 'heart'} text-tarot-cream/70 text-xl"></i>
+        </div>
+        <div class="text-center text-xs text-tarot-cream/50">${card.arcana === 'major' ? '大阿卡那' : '小阿卡那'}</div>
+        ${card.reversed ? '<div class="absolute top-1 right-1 text-xs text-tarot-gold/70">逆</div>' : ''}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="mt-2 text-center text-xs text-tarot-cream/60 card-meaning hidden" data-index="${index}">
+  ${card.reversed ? card.reversedMeaning : card.meaning}
+</div>
+`;
                 
                 // 点击牌显示/隐藏含义
                 const cardElement = cardPosition.querySelector('.tarot-card');
