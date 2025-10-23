@@ -1073,68 +1073,78 @@
         // 创建扇形牌组（增加牌数量并添加"安悟塔罗"文字）
         function createFanDeck() {
   readingElements.fanCardDeck.innerHTML = '';
-  const cardsToShow = 78; // 显示全部78张塔罗牌
-  const angleStep = 1.8; // 减小每张牌的角度差，使扇形更宽
-  const startAngle = -(angleStep * (cardsToShow - 1)) / 2; // 起始角度
+  const cardsToShow = 78;
+  const angleStep = 1.8;
+  const startAngle = -(angleStep * (cardsToShow - 1)) / 2;
 
-  // 从洗牌后的牌组中取前78张创建扇形
+  let createdCards = 0; // 添加计数器
+
   for (let i = 0; i < cardsToShow; i++) {
-    const card = state.shuffledDeck[i]; // 改为直接取洗牌后的牌
-                const angle = startAngle + (i * angleStep);
-                
-                const cardElement = document.createElement('div');
-                cardElement.className = 'tarot-card tarot-slot perspective cursor-pointer transition-all duration-300 hover:-translate-y-4';
-                cardElement.style.transform = `rotate(${angle}deg)`;
-                cardElement.dataset.index = i;
-                
-                // 牌面HTML结构，背面添加"安悟塔罗"文字
-const imageName = card.reversed ? `${card.name}（逆）.jpg` : `${card.name}（正）.jpg`;
-cardElement.innerHTML = `
-<div class="tarot-card-inner relative w-24 h-36 md:w-28 md:h-40">
-  <div class="tarot-card-face absolute w-full h-full bg-gradient-to-b from-tarot-purple to-tarot-indigo rounded-lg border-2 border-tarot-gold/50 flex flex-col items-center justify-center tarot-card-back">
-    <i class="fa fa-star text-2xl text-tarot-gold animate-star-pulse mb-2"></i>
-    <span class="text-tarot-cream font-serif font-bold">安悟塔罗</span>
-  </div>
-  <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-2 tarot-card-front overflow-hidden">
-    <img src="${imageName}" 
-         alt="${card.name}${card.reversed ? '（逆位）' : '（正位）'}" 
-         class="w-full h-full object-cover"
-         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-    <div class="h-full flex flex-col absolute inset-0 bg-tarot-dark" style="display:none;">
-      <div class="text-center font-serif font-bold text-tarot-gold text-sm mb-1">${card.name}</div>
-      <div class="flex-grow flex items-center justify-center">
-        <i class="fa fa-${card.arcana === 'major' ? 'diamond' : 'heart'} text-tarot-cream/70 text-xl"></i>
+    const card = state.shuffledDeck[i];
+    
+    // 添加安全检查
+    if (!card) {
+      console.warn('第', i, '张牌不存在，跳过');
+      continue;
+    }
+    
+    const angle = startAngle + (i * angleStep);
+    const cardElement = document.createElement('div');
+    cardElement.className = 'tarot-card tarot-slot perspective cursor-pointer transition-all duration-300 hover:-translate-y-4';
+    cardElement.style.transform = `rotate(${angle}deg)`;
+    cardElement.dataset.index = i;
+
+    // 牌面HTML结构
+    const imageName = card.reversed ? `${card.name}（逆）.jpg` : `${card.name}（正）.jpg`;
+    cardElement.innerHTML = `
+    <div class="tarot-card-inner relative w-24 h-36 md:w-28 md:h-40">
+      <div class="tarot-card-face absolute w-full h-full bg-gradient-to-b from-tarot-purple to-tarot-indigo rounded-lg border-2 border-tarot-gold/50 flex flex-col items-center justify-center tarot-card-back">
+        <i class="fa fa-star text-2xl text-tarot-gold animate-star-pulse mb-2"></i>
+        <span class="text-tarot-cream font-serif font-bold">安悟塔罗</span>
       </div>
-      <div class="text-center text-xs text-tarot-cream/50">${card.arcana === 'major' ? '大阿卡那' : '小阿卡那'}</div>
-      ${card.reversed ? '<div class="absolute top-1 right-1 text-xs text-tarot-gold/70">逆</div>' : ''}
+      <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-2 tarot-card-front overflow-hidden">
+        <img src="${imageName}" 
+             alt="${card.name}${card.reversed ? '（逆位）' : '（正位）'}" 
+             class="w-full h-full object-cover"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="h-full flex flex-col absolute inset-0 bg-tarot-dark" style="display:none;">
+          <div class="text-center font-serif font-bold text-tarot-gold text-sm mb-1">${card.name}</div>
+          <div class="flex-grow flex items-center justify-center">
+            <i class="fa fa-${card.arcana === 'major' ? 'diamond' : 'heart'} text-tarot-cream/70 text-xl"></i>
+          </div>
+          <div class="text-center text-xs text-tarot-cream/50">${card.arcana === 'major' ? '大阿卡那' : '小阿卡那'}</div>
+          ${card.reversed ? '<div class="absolute top-1 right-1 text-xs text-tarot-gold/70">逆</div>' : ''}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-`;
-                
-                // 点击选择牌
-                cardElement.addEventListener('click', () => {
-                    if (state.selectedCards.length < state.spreadConfig[state.selectedSpread].cardCount) {
-                        // 添加到已选牌组
-                        state.selectedCards.push({...card, originalIndex: i});
-                        cardElement.classList.add('opacity-0');
-                        
-                        // 更新剩余需要的牌数
-                        const remaining = state.spreadConfig[state.selectedSpread].cardCount - state.selectedCards.length;
-                        readingElements.cardsNeed.textContent = remaining;
-                        
-                        // 如果选够了牌，显示牌阵
-                        if (remaining === 0) {
-                            setTimeout(() => {
-                                showSpread();
-                            }, 500);
-                        }
-                    }
-                });
-                
-                readingElements.fanCardDeck.appendChild(cardElement);
-            }
+    `;
+
+    // 点击选择牌
+    cardElement.addEventListener('click', () => {
+      if (state.selectedCards.length < state.spreadConfig[state.selectedSpread].cardCount) {
+        // 添加到已选牌组
+        state.selectedCards.push({...card, originalIndex: i});
+        cardElement.classList.add('opacity-0');
+        
+        // 更新剩余需要的牌数
+        const remaining = state.spreadConfig[state.selectedSpread].cardCount - state.selectedCards.length;
+        readingElements.cardsNeed.textContent = remaining;
+        
+        // 如果选够了牌，显示牌阵
+        if (remaining === 0) {
+          setTimeout(() => {
+            showSpread();
+          }, 500);
         }
+      }
+    });
+    
+    readingElements.fanCardDeck.appendChild(cardElement);
+    createdCards++; // 计数成功创建的牌
+  }
+  
+  console.log('成功创建了', createdCards, '张牌'); // 调试信息
+}
 
         // 显示牌阵（调整六芒星和二择一牌阵布局）
         function showSpread() {
