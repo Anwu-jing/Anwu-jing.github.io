@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="安悟-静导师塔罗疗愈｜仅供娱乐，助力自我探索，非宿命预言">
     <meta name="robots" content="index, follow">
     <title>安悟-静导师 | 塔罗疗愈（仅供娱乐）</title>
@@ -92,6 +92,97 @@
             .hexagram-card { position: absolute; width: 22%; transition: all 0.3s ease; }
             .decision-card { position: absolute; width: 18%; transition: all 0.3s ease; }
         }
+/* 手机端全面优化 */
+@media (max-width: 767px) {
+  /* 导航栏优化 */
+  nav {
+    padding: 0.5rem 0 !important;
+  }
+  
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* 按钮优化 */
+  button {
+    min-height: 44px !important; /* 苹果推荐的最小触摸尺寸 */
+  }
+  
+  /* 欢迎页优化 */
+  #welcome-page h2 {
+    font-size: 1.8rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  #welcome-page p {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+  }
+  
+  /* 抽牌区域优化 */
+  .fan-layout {
+    height: 280px !important;
+    margin: 1rem 0 !important;
+  }
+  
+  .tarot-card {
+    touch-action: manipulation;
+    min-height: 120px;
+  }
+  
+  .tarot-card-inner {
+    width: 80px !important;
+    height: 120px !important;
+  }
+  
+  .tarot-slot {
+    margin: 0 -3px !important; /* 减少重叠 */
+  }
+  
+  /* 牌阵显示优化 */
+  #spread-container {
+    padding: 0.5rem !important;
+  }
+  
+  .tarot-card-flipped {
+    margin: 0.25rem !important;
+  }
+  
+  /* 文本优化 */
+  .text-\[clamp\(1rem\2c 2vw\2c 1\.25rem\)\] {
+    font-size: 1rem !important;
+  }
+  
+  .text-\[clamp\(1\.5rem\2c 3vw\2c 2\.5rem\)\] {
+    font-size: 1.5rem !important;
+  }
+  
+  /* 模态框优化 */
+  .fixed.inset-0 {
+    padding: 1rem !important;
+  }
+  
+  .max-w-md {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  /* 历史记录优化 */
+  #history-list .bg-tarot-dark {
+    padding: 1rem !important;
+  }
+}
+
+/* 通用触摸优化 */
+.tarot-card {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
     </style>
 </head>
 <body class="star-bg text-tarot-cream min-h-screen font-sans overflow-x-hidden">
@@ -150,14 +241,14 @@
             <p class="text-[clamp(1rem,2vw,1.25rem)] max-w-2xl mx-auto mb-10 text-tarot-cream/90 leading-relaxed">
                 塔罗是照见内心的镜子，而非预测未来的工具。在这里，我们通过塔罗的象征智慧，帮你梳理思绪、探索自我，在迷茫中找到内在力量——所有答案，早已在你心中。
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 mb-8">
-                <button id="start-journey-btn" class="px-8 py-3 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:card-glow">
-                    开启探索之旅 <i class="fa fa-arrow-right ml-2"></i>
-                </button>
-                <button id="learn-tarot-btn" class="px-8 py-3 bg-transparent border-2 border-tarot-cream/50 text-tarot-cream font-bold rounded-full hover:bg-tarot-cream/10 transition-all duration-300">
-                    了解塔罗意义
-                </button>
-            </div>
+            <div class="flex flex-col gap-3 mb-8 w-full px-4">
+  <button id="start-journey-btn" class="w-full px-6 py-4 bg-gradient-to-r from-tarot-purple to-tarot-indigo text-tarot-cream font-bold rounded-full shadow-lg transform transition-all duration-300 text-lg">
+    开启探索之旅 <i class="fa fa-arrow-right ml-2"></i>
+  </button>
+  <button id="learn-tarot-btn" class="w-full px-6 py-4 bg-transparent border-2 border-tarot-cream/50 text-tarot-cream font-bold rounded-full transition-all duration-300 text-lg">
+    了解塔罗意义
+  </button>
+</div>
             <p class="disclaimer-text max-w-md mx-auto">
                 注：本服务仅供娱乐，不构成人生指导，请勿用于封建迷信活动
             </p>
@@ -185,10 +276,10 @@
                 </div>
                 
                 <!-- 议题输入框 -->
-                <textarea id="question-input" 
-                          class="w-full bg-tarot-dark/50 border border-tarot-purple/30 rounded-lg p-4 text-tarot-cream min-h-[150px] placeholder-tarot-cream/40 focus:outline-none focus:border-tarot-gold focus:ring-2 focus:ring-tarot-gold/20 transition-all duration-300"
-                          placeholder="请输入你想探索的议题（例：我该如何改善与家人的沟通？）..."
-                          required></textarea>
+                <textarea id="question-input"
+  class="w-full bg-tarot-dark/50 border border-tarot-purple/30 rounded-lg p-4 text-tarot-cream min-h-[120px] placeholder-tarot-cream/40 focus:outline-none focus:border-tarot-gold focus:ring-2 focus:ring-tarot-gold/20 transition-all duration-300 text-base"
+  placeholder="请输入你想探索的议题（例：我该如何改善与家人的沟通？）..."
+  required></textarea>
                 
                 <!-- 页面导航按钮 -->
                 <div class="mt-8 flex justify-between items-center">
@@ -217,9 +308,9 @@
             </div>
             
             <!-- 牌阵卡片容器（响应式网格） -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 gap-4 max-w-2xl mx-auto w-full px-2">
                 <!-- 1. 单张牌牌阵 -->
-                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="one-card">
+               <div class="spread-card bg-tarot-dark/50 rounded-xl p-4 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2 active:scale-95" data-spread="one-card">
                     <div class="text-center mb-4">
                         <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
                             <i class="fa fa-diamond text-tarot-gold text-2xl"></i>
@@ -241,7 +332,7 @@
                 </div>
                 
                 <!-- 2. 圣三角牌阵 -->
-                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="celtic-cross">
+                <div class="spread-card bg-tarot-dark/50 rounded-xl p-4 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2 active:scale-95" data-spread="one-card">
                     <div class="text-center mb-4">
                         <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
                             <i class="fa fa-star text-tarot-gold text-2xl"></i>
@@ -271,7 +362,7 @@
                 </div>
                 
                 <!-- 3. 一对一关系牌阵 -->
-                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="relationship">
+                <div class="spread-card bg-tarot-dark/50 rounded-xl p-4 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2 active:scale-95" data-spread="one-card">
                     <div class="text-center mb-4">
                         <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
                             <i class="fa fa-heart text-tarot-gold text-2xl"></i>
@@ -307,7 +398,7 @@
                 </div>
                 
                 <!-- 4. 二择一选择牌阵 -->
-                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="decision">
+                <div class="spread-card bg-tarot-dark/50 rounded-xl p-4 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2 active:scale-95" data-spread="one-card">
                     <div class="text-center mb-4">
                         <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
                             <i class="fa fa-balance-scale text-tarot-gold text-2xl"></i>
@@ -343,7 +434,7 @@
                 </div>
                 
                 <!-- 5. 六芒星牌阵 -->
-                <div class="spread-card bg-tarot-dark/50 rounded-xl p-6 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2" data-spread="hexagram">
+                <div class="spread-card bg-tarot-dark/50 rounded-xl p-4 border border-tarot-purple/30 cursor-pointer transition-all duration-300 hover:bg-tarot-dark/70 hover:border-tarot-gold/50 hover:-translate-y-2 active:scale-95" data-spread="one-card">
                     <div class="text-center mb-4">
                         <div class="inline-block p-3 bg-tarot-purple/20 rounded-full mb-3">
                             <i class="fa fa-star-o text-tarot-gold text-2xl"></i>
@@ -1073,55 +1164,55 @@
         // 创建扇形牌组（增加牌数量并添加"安悟塔罗"文字）
         function createFanDeck() {
   readingElements.fanCardDeck.innerHTML = '';
-  const cardsToShow = 78;
-  const angleStep = 1.5;
+  
+  // 手机端减少牌数，提高可操作性
+  const isMobile = window.innerWidth < 768;
+  const cardsToShow = isMobile ? 25 : 50;
+  const angleStep = isMobile ? 4.0 : 2.0;
   const startAngle = -(angleStep * (cardsToShow - 1)) / 2;
 
-  // 第一层牌（基础层）
+  console.log(`设备: ${isMobile ? '手机' : '电脑'}, 显示 ${cardsToShow} 张牌`);
+
+  // 单层牌组，确保操作简单
   for (let i = 0; i < cardsToShow; i++) {
-    const card = state.shuffledDeck[i];
+    const cardIndex = i % state.shuffledDeck.length;
+    const card = state.shuffledDeck[cardIndex];
     if (!card) continue;
     
     const angle = startAngle + (i * angleStep);
-    createCardElement(card, i, angle, 0); // 第一层，z-index较低
+    createMobileFriendlyCard(card, i, angle, isMobile);
   }
-  
-  // 第二层牌（叠加层，每隔一张牌创建，创造立体感）
-  for (let i = 0; i < cardsToShow; i += 2) {
-    const card = state.shuffledDeck[i];
-    if (!card) continue;
-    
-    const angle = startAngle + (i * angleStep) + 0.3; // 稍微偏移角度
-    createCardElement(card, i, angle, 10); // 第二层，z-index较高
-  }
-  
-  console.log('双层扇形牌组创建完成');
 }
-        // 创建单张牌元素的辅助函数
-function createCardElement(card, index, angle, zIndex) {
+
+// 手机友好型牌创建函数
+function createMobileFriendlyCard(card, index, angle, isMobile) {
   const cardElement = document.createElement('div');
-  cardElement.className = 'tarot-card tarot-slot perspective cursor-pointer transition-all duration-300 hover:-translate-y-4';
+  
+  // 手机端使用更大的点击区域
+  const cardSize = isMobile ? 'w-20 h-32' : 'w-24 h-36';
+  const mobileClass = isMobile ? 'min-h-32 active:scale-95' : '';
+  
+  cardElement.className = `tarot-card tarot-slot perspective cursor-pointer transition-all duration-300 hover:-translate-y-1 ${mobileClass}`;
   cardElement.style.transform = `rotate(${angle}deg)`;
-  cardElement.style.zIndex = zIndex;
   cardElement.dataset.index = index;
 
   const imageName = card.reversed ? `${card.name}（逆）.jpg` : `${card.name}（正）.jpg`;
   cardElement.innerHTML = `
-  <div class="tarot-card-inner relative w-24 h-36 md:w-28 md:h-40">
+  <div class="tarot-card-inner relative ${cardSize}">
     <div class="tarot-card-face absolute w-full h-full bg-gradient-to-b from-tarot-purple to-tarot-indigo rounded-lg border-2 border-tarot-gold/50 flex flex-col items-center justify-center tarot-card-back">
-      <i class="fa fa-star text-2xl text-tarot-gold animate-star-pulse mb-2"></i>
-      <span class="text-tarot-cream font-serif font-bold">安悟塔罗</span>
+      <i class="fa fa-star text-xl text-tarot-gold animate-star-pulse mb-1"></i>
+      <span class="text-tarot-cream font-serif font-bold text-xs">安悟塔罗</span>
     </div>
-    <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-2 tarot-card-front overflow-hidden">
+    <div class="tarot-card-face absolute w-full h-full bg-tarot-dark rounded-lg border-2 border-tarot-gold/50 p-1 tarot-card-front overflow-hidden">
       <img src="${imageName}" 
            alt="${card.name}${card.reversed ? '（逆位）' : '（正位）'}" 
            class="w-full h-full object-cover transition-opacity duration-300"
            onerror="this.style.opacity='0'; this.nextElementSibling.style.display='flex';"
            onload="this.style.opacity='1'">
       <div class="h-full flex flex-col items-center justify-center bg-tarot-dark">
-        <div class="text-center font-serif font-bold text-tarot-gold text-sm mb-1">${card.name}</div>
+        <div class="text-center font-serif font-bold text-tarot-gold text-xs mb-1">${card.name}</div>
         <div class="flex-grow flex items-center justify-center">
-          <i class="fa fa-${card.arcana === 'major' ? 'diamond' : 'heart'} text-tarot-cream/70 text-xl"></i>
+          <i class="fa fa-${card.arcana === 'major' ? 'diamond' : 'heart'} text-tarot-cream/70 text-lg"></i>
         </div>
         <div class="text-center text-xs text-tarot-cream/50">${card.arcana === 'major' ? '大阿卡那' : '小阿卡那'}</div>
         ${card.reversed ? '<div class="absolute top-1 right-1 text-xs text-tarot-gold/70">逆</div>' : ''}
@@ -1130,24 +1221,56 @@ function createCardElement(card, index, angle, zIndex) {
   </div>
   `;
 
-  // 点击事件
-  cardElement.addEventListener('click', () => {
-    if (state.selectedCards.length < state.spreadConfig[state.selectedSpread].cardCount) {
-      state.selectedCards.push({...card, originalIndex: index});
-      cardElement.classList.add('opacity-0');
-      
-      const remaining = state.spreadConfig[state.selectedSpread].cardCount - state.selectedCards.length;
-      readingElements.cardsNeed.textContent = remaining;
-      
-      if (remaining === 0) {
-        setTimeout(() => {
-          showSpread();
-        }, 500);
-      }
+  // 优化触摸体验
+  let touchStartTime;
+  cardElement.addEventListener('touchstart', (e) => {
+    touchStartTime = Date.now();
+    cardElement.style.transform = `${cardElement.style.transform} scale(0.95)`;
+    e.preventDefault();
+  });
+  
+  cardElement.addEventListener('touchend', (e) => {
+    const touchDuration = Date.now() - touchStartTime;
+    cardElement.style.transform = cardElement.style.transform.replace(' scale(0.95)', '');
+    
+    // 防止误触，触摸时间太短不触发
+    if (touchDuration > 100) {
+      handleCardSelection(card, index, cardElement);
     }
+    e.preventDefault();
+  });
+  
+  // 保留原来的点击事件
+  cardElement.addEventListener('click', () => {
+    handleCardSelection(card, index, cardElement);
   });
   
   readingElements.fanCardDeck.appendChild(cardElement);
+}
+
+// 提取选择牌的逻辑
+function handleCardSelection(card, index, cardElement) {
+  if (state.selectedCards.length < state.spreadConfig[state.selectedSpread].cardCount) {
+    state.selectedCards.push({...card, originalIndex: index});
+    cardElement.classList.add('opacity-0');
+    
+    const remaining = state.spreadConfig[state.selectedSpread].cardCount - state.selectedCards.length;
+    readingElements.cardsNeed.textContent = remaining;
+    
+    if (remaining === 0) {
+      setTimeout(() => {
+        showSpread();
+      }, 500);
+    }
+  }
+}
+    });
+    
+    readingElements.fanCardDeck.appendChild(cardElement);
+    createdCards++; // 计数成功创建的牌
+  }
+  
+  console.log('成功创建了', createdCards, '张牌'); // 调试信息
 }
 
         // 显示牌阵（调整六芒星和二择一牌阵布局）
